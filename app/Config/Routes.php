@@ -36,3 +36,28 @@ $routes->get('/users/delete/(:num)', 'Users::delete/$1', $allRole); // aksi hapu
 $routes->get('users/detail/(:num)', 'Users::detail/$1', $allRole); // aksi detail user
 $routes->get('users/print', 'Users::print', $allRole); // aksi print data user
 $routes->get('users/wa/(:num)', 'Users::wa/$1', $allRole); // aksi kirim ke whatsapp
+
+// ================= BUKU =================
+// tampil 
+$routes->get('buku', 'Buku::index');
+$routes->get('buku/create', 'Buku::create');
+$routes->post('buku/store', 'Buku::store');
+$routes->get('buku/detail/(:num)', 'Buku::detail/$1');
+$routes->get('buku/edit/(:num)', 'Buku::edit/$1');
+$routes->post('buku/update/(:num)', 'Buku::update/$1');
+$routes->get('buku/delete/(:num)', 'Buku::delete/$1');
+$routes->get('buku/print', 'Buku::print');
+$routes->get('buku/wa/(:num)', 'Buku::wa/$1');
+$routes->get('/peminjaman', 'Peminjaman::index'); // list data
+
+$routes->get('/peminjaman/create', 'Peminjaman::create'); // form tambah
+$routes->post('/peminjaman/store', 'Peminjaman::store'); // simpan data
+
+$routes->get('/peminjaman/edit/(:num)', 'Peminjaman::edit/$1'); // form edit
+$routes->post('/peminjaman/update/(:num)', 'Peminjaman::update/$1'); // update data
+
+$routes->get('/peminjaman/delete/(:num)', 'Peminjaman::delete/$1'); // hapus data
+
+$routes->get('/peminjaman/detail/(:num)', 'Peminjaman::detail/$1'); // detail peminjaman
+
+$routes->get('/peminjaman/print', 'Peminjaman::print'); // print data
