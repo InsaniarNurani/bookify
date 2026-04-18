@@ -1,43 +1,53 @@
 <?= $this->extend('layouts/main') ?>
 <?= $this->section('content') ?>
+
 <h3>Tambah Buku</h3>
 
 <form method="post" action="<?= base_url('buku/store') ?>" enctype="multipart/form-data">
 
     Judul:<br>
-    <input type="text" name="judul"><br><br>
+    <input type="text" name="judul" required><br><br>
 
     ISBN:<br>
     <input type="text" name="isbn"><br><br>
 
+    <!-- KATEGORI (FIX: pakai ID) -->
     Kategori:<br>
-    <select name="id_kategori">
-        <option value="">Pilih</option>
+    <select name="id_kategori" id="kategori" style="width:100%">
+        <option value=""></option>
         <?php foreach ($kategori as $k): ?>
-            <option value="<?= $k['id_kategori'] ?>"><?= $k['nama_kategori'] ?></option>
+            <option value="<?= $k['id_kategori'] ?>">
+                <?= $k['nama_kategori'] ?>
+            </option>
         <?php endforeach; ?>
     </select><br><br>
 
-
+    <!-- PENULIS (FIX: pakai ID) -->
     Penulis:<br>
-    <select name="id_penulis">
-        <option value="">Pilih</option>
+    <select name="id_penulis" id="penulis" style="width:100%">
+        <option value=""></option>
         <?php foreach ($penulis as $p): ?>
-            <option value="<?= $p['id_penulis'] ?>"><?= $p['nama_penulis'] ?></option>
+            <option value="<?= $p['id_penulis'] ?>">
+                <?= $p['nama_penulis'] ?>
+            </option>
         <?php endforeach; ?>
     </select><br><br>
 
+    <!-- PENERBIT (FIX: pakai ID) -->
     Penerbit:<br>
-    <select name="id_penerbit">
-        <option value="">Pilih</option>
+    <select name="id_penerbit" id="penerbit" style="width:100%">
+        <option value=""></option>
         <?php foreach ($penerbit as $p): ?>
-            <option value="<?= $p['id_penerbit'] ?>"><?= $p['nama_penerbit'] ?></option>
+            <option value="<?= $p['id_penerbit'] ?>">
+                <?= $p['nama_penerbit'] ?>
+            </option>
         <?php endforeach; ?>
     </select><br><br>
 
+    <!-- RAK -->
     Rak:<br>
-    <select name="id_rak">
-        <option value="">Pilih</option>
+    <select name="id_rak" style="width:100%">
+        <option value="">Pilih Rak</option>
         <?php foreach ($rak as $r): ?>
             <option value="<?= $r['id_rak'] ?>">
                 <?= $r['nama_rak'] ?> - <?= $r['lokasi'] ?>
@@ -46,12 +56,7 @@
     </select><br><br>
 
     Tahun Terbit:<br>
-    <select name="tahun_terbit" required>
-        <option value="">Pilih Tahun</option>
-        <?php for ($i = date('Y'); $i >= 1; $i--): ?>
-            <option value="<?= $i ?>"><?= $i ?></option>
-        <?php endfor; ?>
-    </select><br><br>
+    <input type="number" name="tahun_terbit"><br><br>
 
     Jumlah:<br>
     <input type="number" name="jumlah"><br><br>
@@ -62,11 +67,43 @@
     Deskripsi:<br>
     <textarea name="deskripsi"></textarea><br><br>
 
-    Cover / file :<br>
+    Cover:<br>
     <input type="file" name="cover"><br><br>
 
     <button type="submit">Simpan</button>
     <a href="<?= base_url('buku') ?>">Kembali</a>
-
 </form>
+
+<!-- SELECT2 -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+
+        $('#kategori').select2({
+            tags: true,
+            width: '100%',
+            placeholder: 'Pilih atau ketik kategori',
+            allowClear: true
+        });
+
+        $('#penulis').select2({
+            tags: true,
+            width: '100%',
+            placeholder: 'Pilih atau ketik penulis',
+            allowClear: true
+        });
+
+        $('#penerbit').select2({
+            tags: true,
+            width: '100%',
+            placeholder: 'Pilih atau ketik penerbit',
+            allowClear: true
+        });
+
+    });
+</script>
+
 <?= $this->endSection() ?>

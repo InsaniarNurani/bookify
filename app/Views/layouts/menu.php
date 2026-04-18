@@ -16,8 +16,33 @@
        Setting
    </a><br>
    <a href="<?= base_url('/buku') ?>"> Buku </a><br>
+   <?php if (session()->get('role') == 'admin' || session()->get('role') == 'petugas') : ?>
+       <a href="<?= base_url('/kategori') ?>">
+           Kategori
+       </a><br>
+   <?php endif; ?>
+   <?php if (session()->get('role') == 'admin' || session()->get('role') == 'petugas') : ?>
+       <a href="<?= base_url('/penulis') ?>">
+           Penulis
+       </a><br>
+   <?php endif; ?>
+   <?php if (session()->get('role') == 'admin' || session()->get('role') == 'petugas') : ?>
+       <a href="<?= base_url('/penerbit') ?>">
+           Penerbit
+       </a><br>
+   <?php endif; ?>
    <a href="<?= base_url('peminjaman') ?>">
        Peminjaman
+   </a><br>
+
+   <a href="<?= base_url('pengembalian') ?>">
+       Pengembalian
+   </a><br>
+   <a href="<?= base_url('rak') ?>">
+       Rak
+   </a><br>
+   <a href="<?= base_url('Anggota') ?>">
+       Anggota
    </a><br>
    <li>
        <a href="<?= base_url('/logout') ?>">Log Out</a>
