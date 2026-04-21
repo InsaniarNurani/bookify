@@ -1,10 +1,7 @@
 <?= $this->extend('layouts/main') ?>
 <?= $this->section('content') ?>
 
-<h3>Data Anggota</h3>
-
-<a href="<?= base_url('anggota/create') ?>">+ Tambah Anggota</a>
-
+<a href="<?= base_url('anggota') ?>">Data Anggota</a>
 <br><br>
 
 <form method="get">

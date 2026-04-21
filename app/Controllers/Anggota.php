@@ -13,10 +13,10 @@ class Anggota extends BaseController
         $this->anggotaModel = new AnggotaModel();
     }
 
-    // INDEX + SEARCH
+    // 🔍 LIST + SEARCH
     public function index()
     {
-        $keyword = $this->request->getGet('keyword');
+        $keyword = $this->request->getGet('search');
 
         if ($keyword) {
             $data['anggota'] = $this->anggotaModel
@@ -31,12 +31,13 @@ class Anggota extends BaseController
         return view('anggota/index', $data);
     }
 
-    // CREATE
+    // 📥 FORM TAMBAH
     public function create()
     {
         return view('anggota/create');
     }
 
+    // 💾 SIMPAN
     public function store()
     {
         $this->anggotaModel->save([
@@ -50,17 +51,17 @@ class Anggota extends BaseController
         return redirect()->to('/anggota');
     }
 
-    // EDIT
+    // ✏️ FORM EDIT
     public function edit($id)
     {
         $data['anggota'] = $this->anggotaModel->find($id);
         return view('anggota/edit', $data);
     }
 
+    // 🔄 UPDATE
     public function update($id)
     {
         $this->anggotaModel->update($id, [
-            'user_id' => $this->request->getPost('user_id'),
             'nis' => $this->request->getPost('nis'),
             'alamat' => $this->request->getPost('alamat'),
             'no_hp' => $this->request->getPost('no_hp'),
@@ -70,7 +71,7 @@ class Anggota extends BaseController
         return redirect()->to('/anggota');
     }
 
-    // DELETE
+    // ❌ DELETE
     public function delete($id)
     {
         $this->anggotaModel->delete($id);

@@ -8,5 +8,16 @@ class PeminjamanModel extends Model
 {
     protected $table = 'peminjaman';
     protected $primaryKey = 'id_peminjaman';
-    protected $allowedFields = ['id_anggota', 'tanggal_pinjam', 'status'];
+
+    protected $allowedFields = [
+        'id_anggota',
+        'id_petugas',
+        'tanggal_pinjam',
+        'tanggal_kembali',
+        'metode',
+        'alamat',
+        'status',
+        'perpanjang',
+        'ongkir'
+    ];
 }

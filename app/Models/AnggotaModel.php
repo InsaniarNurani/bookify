@@ -8,5 +8,12 @@ class AnggotaModel extends Model
 {
     protected $table = 'anggota';
     protected $primaryKey = 'id_anggota';
-    protected $allowedFields = ['user_id', 'nis', 'alamat', 'no_hp'];
+
+    protected $allowedFields = [
+        'user_id',
+        'nis',
+        'alamat',
+        'no_hp',
+        'tanggal_daftar'
+    ];
 }
