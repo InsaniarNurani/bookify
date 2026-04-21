@@ -31,15 +31,7 @@
                     <input type="password" name="password">
                 </div>
 
-                <div>
-                    <label>Role</label><br>
-                    <select name="role">
-                        <option value="admin" <?= $user['role'] == 'admin' ? 'selected' : '' ?>>Admin</option>
-                        <option value="petugas" <?= $user['role'] == 'petugas' ? 'selected' : '' ?>>Petugas</option>
-                        <option value="anggota" <?= $user['role'] == 'anggota' ? 'selected' : '' ?>>Anggota</option>
-                    </select>
-                </div>
-
+                <input type="hidden" name="role" value="<?= $user['role'] ?>">
                 <div>
                     <label>Foto</label><br>
                     <input type="file" name="foto"><br>

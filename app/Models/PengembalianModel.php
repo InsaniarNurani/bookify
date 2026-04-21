@@ -14,6 +14,4 @@ class PengembalianModel extends Model
         'tanggal_dikembalikan',
         'denda'
     ];
-
-    protected $useTimestamps = false;
 }

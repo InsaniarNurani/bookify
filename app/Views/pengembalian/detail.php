@@ -4,12 +4,18 @@
 <h3>Detail Pengembalian</h3>
 
 <table border="1">
+    <?php if (($from ?? '') == 'peminjaman'): ?>
+        <a href="<?= base_url('peminjaman/create') ?>" class="btn btn-secondary">
+            ← Kembali ke Peminjaman
+        </a>
+    <?php else: ?>
+        <a href="<?= base_url('buku') ?>" class="btn btn-secondary">
+            ← Kembali
+        </a>
+    <?php endif; ?>
+
     <tr>
-        <td>ID</td>
-        <td><?= $pengembalian['id_pengembalian'] ?></td>
-    </tr>
-    <tr>
-        <td>ID Peminjaman</td>
+        <td>Peminjaman</td>
         <td><?= $pengembalian['id_peminjaman'] ?></td>
     </tr>
     <tr>

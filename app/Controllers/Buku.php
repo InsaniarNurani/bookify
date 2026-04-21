@@ -23,9 +23,17 @@ class Buku extends BaseController
     // ================= INDEX (LIST + SEARCH + PAGINATION) =================
     public function index()
     {
+        // 🔒 BATASI AKSES UNTUK ANGGOTA
+        if (session()->get('role') == 'anggota') {
+            return redirect()->to(base_url('/dashboard'))
+                ->with('error', 'Anda tidak boleh mengakses data buku');
+        }
+
+        // ================= FILTER =================
         $keyword  = $this->request->getGet('keyword');
         $kategori = $this->request->getGet('kategori');
 
+        // ================= QUERY BUILDER =================
         $builder = $this->bukuModel
             ->select('buku.*, kategori.nama_kategori, penulis.nama_penulis, penerbit.nama_penerbit, rak.nama_rak, rak.lokasi')
             ->join('kategori', 'kategori.id_kategori = buku.id_kategori', 'left')
@@ -34,14 +42,17 @@ class Buku extends BaseController
             ->join('buku_rak', 'buku_rak.id_buku = buku.id_buku', 'left')
             ->join('rak', 'rak.id_rak = buku_rak.id_rak', 'left');
 
+        // ================= SEARCH =================
         if ($keyword) {
             $builder->like('buku.judul', $keyword);
         }
 
+        // ================= FILTER KATEGORI =================
         if ($kategori) {
             $builder->where('buku.id_kategori', $kategori);
         }
 
+        // ================= DATA =================
         $data = [
             'buku'     => $builder->paginate(10),
             'pager'    => $this->bukuModel->pager,

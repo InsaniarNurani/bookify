@@ -122,9 +122,20 @@ $routes->get('/pengembalian/edit/(:num)', 'Pengembalian::edit/$1');
 $routes->post('/pengembalian/update/(:num)', 'Pengembalian::update/$1');
 $routes->get('/pengembalian/delete/(:num)', 'Pengembalian::delete/$1');
 
-$routes->get('/Anggota', 'Anggota::index');
-$routes->get('/anggota/create', 'Anggota::create');
-$routes->post('/anggota/store', 'Anggota::store');
-$routes->get('/anggota/edit/(:num)', 'Anggota::edit/$1');
-$routes->post('/anggota/update/(:num)', 'Anggota::update/$1');
-$routes->get('/anggota/delete/(:num)', 'Anggota::delete/$1');
+$routes->get('anggota', 'Anggota::index');
+$routes->get('anggota/create', 'Anggota::create');
+$routes->post('anggota/store', 'Anggota::store');
+$routes->get('anggota/edit/(:num)', 'Anggota::edit/$1');
+$routes->post('anggota/update/(:num)', 'Anggota::update/$1');
+$routes->get('anggota/delete/(:num)', 'Anggota::delete/$1');
+
+
+$routes->get('/peminjaman/create', 'Peminjaman::create');
+$routes->post('/peminjaman/store', 'Peminjaman::store');
+$routes->post('/peminjaman/tambahDetail', 'Peminjaman::tambahDetail');
+$routes->post('/peminjaman/updateJumlah', 'Peminjaman::updateJumlah');
+$routes->get('/peminjaman/hapus/(:num)', 'Peminjaman::hapus/$1');
+$routes->get('peminjaman/perpanjang/(:num)', 'Peminjaman::perpanjang/$1');
+$routes->get('peminjaman/edit/(:num)', 'Peminjaman::edit/$1');
+$routes->post('peminjaman/update/(:num)', 'Peminjaman::update/$1');
+$routes->get('peminjaman/kembalikan/(:num)', 'Peminjaman::kembalikan/$1');

@@ -19,8 +19,20 @@ class Pengembalian extends BaseController
     // READ (LIST)
     public function index()
     {
-        $data['pengembalian'] = $this->pengembalianModel
+        $model = new \App\Models\PengembalianModel();
+
+        $data['pengembalian'] = $model
+            ->select('
+            pengembalian.*,
+            peminjaman.tanggal_pinjam,
+            anggota.id_anggota,
+            users.nama as nama_anggota,
+            petugas.jabatan
+        ')
             ->join('peminjaman', 'peminjaman.id_peminjaman = pengembalian.id_peminjaman', 'left')
+            ->join('anggota', 'anggota.id_anggota = peminjaman.id_anggota', 'left')
+            ->join('users', 'users.id = anggota.user_id', 'left')
+            ->join('petugas', 'petugas.id_petugas = peminjaman.id_petugas', 'left')
             ->findAll();
 
         return view('pengembalian/index', $data);

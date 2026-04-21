@@ -15,10 +15,9 @@
    <a href="<?= base_url('users/edit/' . $idu) ?>">
        Setting
    </a><br>
-   <a href="<?= base_url('/buku') ?>"> Buku </a><br>
-   <?php if (session()->get('role') == 'admin' || session()->get('role') == 'petugas') : ?>
-       <a href="<?= base_url('/kategori') ?>">
-           Kategori
+
+   <?php if (session()->get('role') != 'anggota') : ?>
+       <a href="<?= base_url('buku') ?>">Data Buku</a>
        </a><br>
    <?php endif; ?>
    <?php if (session()->get('role') == 'admin' || session()->get('role') == 'petugas') : ?>

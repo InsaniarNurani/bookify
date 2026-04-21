@@ -1,78 +1,47 @@
 <?= $this->extend('layouts/main') ?>
 <?= $this->section('content') ?>
 
-<style>
-    @media print {
+<h3>Detail Peminjaman</h3>
 
-        /* sembunyikan semua */
-        body * {
-            visibility: hidden;
-        }
+<?php if (!empty($detail)): ?>
+    <p>
+        <b>Tanggal Pinjam:</b> <?= $detail[0]['tanggal_pinjam'] ?> <br>
+        <b>Tanggal Kembali:</b> <?= $detail[0]['tanggal_kembali'] ?> <br>
+        <b>Status:</b> <?= $detail[0]['status'] ?>
+    </p>
+<?php endif; ?>
 
-        /* tampilkan hanya area print */
-        #area-print,
-        #area-print * {
-            visibility: visible;
-        }
+<table border="1" cellpadding="8">
 
-        /* posisikan ke atas */
-        #area-print {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-        }
+    <tr>
+        <th>Cover</th>
+        <th>Judul Buku</th>
+        <th>Jumlah</th>
+    </tr>
 
-        /* hilangkan tombol */
-        button,
-        a {
-            display: none;
-        }
-    }
-</style>
-
-<div id="area-print">
-
-    <h3>Detail Peminjaman</h3>
-
-    <table border="1" cellpadding="5">
+    <?php foreach ($detail as $d): ?>
         <tr>
-            <td>Tanggal Pinjam</td>
-            <td><?= $peminjaman['tanggal_pinjam'] ?></td>
+            <td>
+                <?php if (!empty($d['cover'])): ?>
+                    <img src="<?= base_url('uploads/buku/' . $d['cover']) ?>" width="80">
+                <?php else: ?>
+                    -
+                <?php endif; ?>
+            </td>
+
+            <td><?= $d['judul'] ?></td>
+
+            <td><?= $d['jumlah'] ?></td>
         </tr>
+    <?php endforeach; ?>
 
-        <tr>
-            <td>Tanggal Kembali</td>
-            <td><?= $peminjaman['tanggal_kembali'] ?></td>
-        </tr>
-
-        <tr>
-            <td>Status</td>
-            <td><?= $peminjaman['status'] ?></td>
-        </tr>
-    </table>
-
-    <br>
-
-    <h4>Buku yang Dipinjam</h4>
-
-    <table border="1" cellpadding="5">
-        <tr>
-            <th>Judul Buku</th>
-            <th>Jumlah</th>
-        </tr>
-
-        <tr>
-            <td><?= implode(', ', array_column($detail, 'judul')) ?></td>
-            <td><?= implode(', ', array_column($detail, 'jumlah')) ?></td>
-        </tr>
-    </table>
-
-</div>
+</table>
 
 <br>
 
-<button onclick="window.print()">Print</button>
-<a href="<?= base_url('peminjaman') ?>">Kembali</a>
+<!-- ================== KEMBALI ================== -->
+<a href="<?= base_url('peminjaman') ?>" class="btn btn-secondary">
+    ← Kembali ke Data Peminjaman
+</a>
 
 <?= $this->endSection() ?>
