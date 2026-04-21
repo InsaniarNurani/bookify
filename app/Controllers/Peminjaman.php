@@ -28,15 +28,20 @@ class Peminjaman extends BaseController
     // ================= INDEX =================
     public function index()
     {
-        $builder = $this->peminjamanModel
-            ->select('peminjaman.*, users.nama as nama_user, anggota.alamat, petugas.nama as nama_petugas')
+        $builder = $this->peminjamanModel;
+
+        $builder = $builder
+            ->select('peminjaman.*, users.nama as nama_peminjam, anggota.alamat, petugas.nama as nama_petugas')
             ->join('anggota', 'anggota.id_anggota = peminjaman.id_anggota', 'left')
             ->join('users', 'users.id = anggota.user_id', 'left')
             ->join('users as petugas', 'petugas.id = peminjaman.id_petugas', 'left');
 
-        // 🔥 USER hanya lihat data sendiri
-        if (session()->get('role') != 'admin') {
-            $builder->where('anggota.user_id', session()->get('id'));
+        // 🔥 FILTER USER LOGIN
+        $role = session()->get('role');
+        $userId = session()->get('id');
+
+        if ($role != 'admin') {
+            $builder->where('anggota.user_id', $userId);
         }
 
         $data['peminjaman'] = $builder->findAll();
@@ -70,20 +75,28 @@ class Peminjaman extends BaseController
     // ================= STORE =================
     public function store()
     {
-        $id_anggota = session()->get('id_anggota');
+        $userId = session()->get('id');
 
-        if (!$id_anggota) {
-            return redirect()->to('/login')->with('error', 'Silakan login dulu');
+        if (!$userId) {
+            return redirect()->to('/login');
+        }
+
+        $anggota = $this->anggotaModel
+            ->where('user_id', $userId)
+            ->first();
+
+        if (!$anggota) {
+            return redirect()->to('/login');
         }
 
         $data = [
-            'id_anggota'     => $id_anggota,
-            'id_petugas'     => session()->get('id_petugas'),
+            'id_anggota' => $anggota['id_anggota'],
+            'id_petugas' => session()->get('id_petugas'),
             'tanggal_pinjam' => $this->request->getPost('tanggal_pinjam'),
             'tanggal_kembali' => $this->request->getPost('tanggal_kembali'),
-            'metode'         => $this->request->getPost('metode'),
-            'alamat'         => $this->request->getPost('alamat'),
-            'status'         => 'diproses'
+            'metode' => $this->request->getPost('metode'),
+            'alamat' => $this->request->getPost('alamat'),
+            'status' => 'diproses'
         ];
 
         $this->peminjamanModel->insert($data);
@@ -140,6 +153,30 @@ class Peminjaman extends BaseController
         ]);
 
         return redirect()->to('/peminjaman');
+    }
+    public function dataPetugas()
+    {
+        $data['peminjaman'] = $this->peminjamanModel
+            ->select('peminjaman.*, anggota.nama, petugas.nama as nama_petugas')
+            ->join('anggota', 'anggota.id_anggota = peminjaman.id_anggota', 'left')
+            ->join('petugas', 'petugas.id_petugas = peminjaman.id_petugas', 'left')
+            ->where('peminjaman.metode', 'dikirim')
+            ->where('peminjaman.status', 'diproses')
+            ->findAll();
+
+        return view('peminjaman/index', $data);
+    }
+    public function antarRumah()
+    {
+        $data['peminjaman'] = $this->peminjamanModel
+            ->select('peminjaman.*, anggota.nama, petugas.nama as nama_petugas')
+            ->join('anggota', 'anggota.id_anggota = peminjaman.id_anggota', 'left')
+            ->join('petugas', 'petugas.id_petugas = peminjaman.id_petugas', 'left')
+            ->where('peminjaman.metode', 'dikirim')
+            ->where('peminjaman.status', 'diproses')
+            ->findAll();
+
+        return view('peminjaman/antar_rumah', $data);
     }
     // ================= KEMBALIKAN =================
     public function kembalikan($id)

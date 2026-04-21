@@ -16,13 +16,11 @@
             <thead class="table-dark text-center">
                 <tr>
                     <th>ID</th>
-                    <th>Anggota</th>
+                    <th>Nama Peminjam</th>
                     <th>Tanggal Pinjam</th>
                     <th>Tanggal Kembali</th>
-                    <th>Metode</th>
-                    <th>Alamat</th>
                     <th>Status</th>
-                    <th>Petugas</th>
+
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -68,24 +66,12 @@
                         </td>
 
                         <td>
-                            <span class="badge bg-dark">
-                                <?= ucfirst($p['metode'] ?? '-') ?>
-                            </span>
-                        </td>
-
-                        <td>
-                            <?= $p['alamat'] ?: '-' ?>
-                        </td>
-
-                        <td>
                             <span class="badge bg-<?= $badge ?>">
                                 <?= ucfirst($status) ?>
                             </span>
                         </td>
 
-                        <td>
-                            <?= $p['nama_petugas'] ?? '-' ?>
-                        </td>
+
 
                         <td style="white-space:nowrap;">
 

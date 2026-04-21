@@ -134,6 +134,8 @@ $routes->get('peminjaman/edit/(:num)', 'Peminjaman::edit/$1');
 $routes->post('peminjaman/update/(:num)', 'Peminjaman::update/$1');
 $routes->get('peminjaman/kembalikan/(:num)', 'Peminjaman::kembalikan/$1');
 $routes->get('peminjaman/konfirmasi/(:num)', 'Peminjaman::konfirmasi/$1');
+$routes->get('petugas/peminjaman', 'Peminjaman::dataPetugas');
+
 
 
 $routes->get('anggota', 'Anggota::index');
