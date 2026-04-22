@@ -43,6 +43,9 @@
    <a href="<?= base_url('Anggota') ?>">
        Anggota
    </a><br>
+   <?php if (session()->get('role') == 'admin') : ?>
+       <a href="<?= base_url('/backup') ?>">Backup Database</a>
+   <?php endif; ?>
    <li>
        <a href="<?= base_url('/logout') ?>">Log Out</a>
    </li>

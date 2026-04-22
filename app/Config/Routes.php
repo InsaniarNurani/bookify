@@ -123,19 +123,25 @@ $routes->post('/pengembalian/update/(:num)', 'Pengembalian::update/$1');
 $routes->get('/pengembalian/delete/(:num)', 'Pengembalian::delete/$1');
 
 
+$routes->group('peminjaman', ['filter' => 'auth'], function ($routes) {
 
-$routes->get('/peminjaman/create', 'Peminjaman::create');
-$routes->post('/peminjaman/store', 'Peminjaman::store');
-$routes->post('/peminjaman/tambahDetail', 'Peminjaman::tambahDetail');
-$routes->post('/peminjaman/updateJumlah', 'Peminjaman::updateJumlah');
-$routes->get('/peminjaman/hapus/(:num)', 'Peminjaman::hapus/$1');
-$routes->get('peminjaman/perpanjang/(:num)', 'Peminjaman::perpanjang/$1');
-$routes->get('peminjaman/edit/(:num)', 'Peminjaman::edit/$1');
-$routes->post('peminjaman/update/(:num)', 'Peminjaman::update/$1');
+    // ================= CRUD =================
+    $routes->get('/', 'Peminjaman::index');              // /peminjaman
+    $routes->get('create', 'Peminjaman::create');        // /peminjaman/create
+    $routes->post('store', 'Peminjaman::store');         // /peminjaman/store
+    $routes->get('delete/(:num)', 'Peminjaman::delete/$1');
+
+    // ================= STATUS FLOW =================
+    $routes->get('konfirmasi/(:num)', 'Peminjaman::konfirmasi/$1'); // petugas
+    $routes->get('bayar/(:num)', 'Peminjaman::bayar/$1');           // anggota
+    $routes->get('antar/(:num)', 'Peminjaman::antar/$1');           // petugas
+    $routes->get('selesai/(:num)', 'Peminjaman::selesai/$1');       // petugas
+});
+$routes->get('peminjaman/pembayaran/(:num)', 'Peminjaman::pembayaran/$1');
+$routes->post('peminjaman/prosesBayar/(:num)', 'Peminjaman::prosesBayar/$1');
 $routes->get('peminjaman/kembalikan/(:num)', 'Peminjaman::kembalikan/$1');
-$routes->get('peminjaman/konfirmasi/(:num)', 'Peminjaman::konfirmasi/$1');
-$routes->get('petugas/peminjaman', 'Peminjaman::dataPetugas');
-
+$routes->get('peminjaman/perpanjang/(:num)/(:num)', 'Peminjaman::perpanjang/$1/$2');
+$routes->get('peminjaman/perpanjang/(:num)/(:num)', 'Peminjaman::perpanjang/$1/$2');
 
 
 $routes->get('anggota', 'Anggota::index');
@@ -144,3 +150,9 @@ $routes->post('anggota/store', 'Anggota::store');
 $routes->get('anggota/edit/(:num)', 'Anggota::edit/$1');
 $routes->post('anggota/update/(:num)', 'Anggota::update/$1');
 $routes->get('anggota/delete/(:num)', 'Anggota::delete/$1');
+
+$routes->get('/backup', 'Backup::index');
+$routes->get('/restore', 'Restore::index');
+$routes->post('/restore/auth', 'Restore::auth');
+$routes->get('/restore/form', 'Restore::form');
+$routes->post('/restore/process', 'Restore::process');

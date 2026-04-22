@@ -3,21 +3,22 @@
 namespace App\Controllers;
 
 use App\Models\UsersModel;
+use App\Models\AnggotaModel;
 use CodeIgniter\Controller;
 
 class Auth extends Controller
 {
-    // Menampilkan halaman view/auth/login
     public function login()
     {
         return view('auth/login');
     }
 
-    // Memproses data login yang diinput pada halaman login
     public function prosesLogin()
     {
         $session = session();
         $usersModel = new UsersModel();
+        $anggotaModel = new AnggotaModel();
+
         $username = $this->request->getPost('username');
         $password = $this->request->getPost('password');
 
@@ -25,14 +26,30 @@ class Auth extends Controller
 
         if ($users) {
             if (password_verify($password, $users['password'])) {
+
+                // ================= AMBIL ID ANGGOTA =================
+                $idAnggota = null;
+
+                if ($users['role'] == 'anggota') {
+                    $anggota = $anggotaModel
+                        ->where('user_id', $users['id'])
+                        ->first();
+
+                    if ($anggota) {
+                        $idAnggota = $anggota['id_anggota'];
+                    }
+                }
+
+                // ================= SET SESSION =================
                 $session->set([
-                    'id' => $users['id'],
-                    'nama' => $users['nama'],
-                    'email' => $users['email'],
-                    'username' => $users['username'],
-                    'role' => $users['role'],
-                    'foto' => $users['foto'],
-                    'logged_in' => true
+                    'id'          => $users['id'],
+                    'id_anggota'  => $idAnggota, // 🔥 INI YANG PENTING
+                    'nama'        => $users['nama'],
+                    'email'       => $users['email'],
+                    'username'    => $users['username'],
+                    'role'        => $users['role'],
+                    'foto'        => $users['foto'],
+                    'logged_in'   => true
                 ]);
 
                 return redirect()->to('/dashboard');
@@ -46,7 +63,6 @@ class Auth extends Controller
         }
     }
 
-    // Logout (keluar dari aplikasi)
     public function logout()
     {
         session()->destroy();

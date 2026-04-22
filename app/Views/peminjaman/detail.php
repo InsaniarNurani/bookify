@@ -3,45 +3,42 @@
 
 <h3>Detail Peminjaman</h3>
 
-<?php if (!empty($detail)): ?>
-    <p>
-        <b>Tanggal Pinjam:</b> <?= $detail[0]['tanggal_pinjam'] ?> <br>
-        <b>Tanggal Kembali:</b> <?= $detail[0]['tanggal_kembali'] ?> <br>
-        <b>Status:</b> <?= $detail[0]['status'] ?>
-    </p>
-<?php endif; ?>
-
 <table border="1" cellpadding="8">
 
     <tr>
-        <th>Cover</th>
-        <th>Judul Buku</th>
-        <th>Jumlah</th>
+        <th>ID Peminjaman</th>
+        <td><?= $peminjaman['id_peminjaman'] ?></td>
     </tr>
 
-    <?php foreach ($detail as $d): ?>
-        <tr>
-            <td>
-                <?php if (!empty($d['cover'])): ?>
-                    <img src="<?= base_url('uploads/buku/' . $d['cover']) ?>" width="80">
-                <?php else: ?>
-                    -
-                <?php endif; ?>
-            </td>
+    <tr>
+        <th>Anggota</th>
+        <td><?= $peminjaman['user_id'] ?? '-' ?></td>
+    </tr>
 
-            <td><?= $d['judul'] ?></td>
+    <tr>
+        <th>Petugas</th>
+        <td><?= $peminjaman['nama_petugas'] ?? '-' ?></td>
+    </tr>
 
-            <td><?= $d['jumlah'] ?></td>
-        </tr>
-    <?php endforeach; ?>
+    <tr>
+        <th>Tanggal Pinjam</th>
+        <td><?= $peminjaman['tanggal_pinjam'] ?></td>
+    </tr>
+
+    <tr>
+        <th>Tanggal Kembali</th>
+        <td><?= $peminjaman['tanggal_kembali'] ?></td>
+    </tr>
+
+    <tr>
+        <th>Status</th>
+        <td><?= $peminjaman['status'] ?></td>
+    </tr>
 
 </table>
 
 <br>
 
-<!-- ================== KEMBALI ================== -->
-<a href="<?= base_url('peminjaman') ?>" class="btn btn-secondary">
-    ← Kembali ke Data Peminjaman
-</a>
+<a href="<?= base_url('peminjaman') ?>">⬅ Kembali</a>
 
 <?= $this->endSection() ?>

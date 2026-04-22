@@ -1,128 +1,158 @@
 <?= $this->extend('layouts/main') ?>
 <?= $this->section('content') ?>
 
-<div class="container mt-4">
+<h3>Data Peminjaman</h3>
 
-    <h3 class="mb-3">📚 Data Peminjaman</h3>
+<?php if (session()->get('role') == 'anggota') : ?>
+    <a href="<?= base_url('peminjaman/create') ?>">+ Tambah Peminjaman</a>
+<?php endif; ?>
 
-    <a href="<?= base_url('peminjaman/create') ?>" class="btn btn-primary mb-3">
-        + Tambah Peminjaman
-    </a>
+<br><br>
 
-    <div class="table-responsive">
+<table border="1" cellpadding="8" cellspacing="0">
+    <tr>
+        <th>Anggota</th>
+        <th>Buku</th>
+        <th>Tanggal Pinjam</th>
+        <th>Tanggal Kembali</th>
+        <th>Status Peminjaman</th>
+        <th>Pengantaran</th>
+        <th>Aksi</th>
+    </tr>
 
-        <table class="table table-bordered table-striped align-middle">
+    <?php foreach ($peminjaman as $p): ?>
+        <tr>
 
-            <thead class="table-dark text-center">
-                <tr>
-                    <th>ID</th>
-                    <th>Nama Peminjam</th>
-                    <th>Tanggal Pinjam</th>
-                    <th>Tanggal Kembali</th>
-                    <th>Status</th>
+            <!-- ANGGOTA -->
+            <td><?= $p['user_id'] ?? '-' ?></td>
 
-                    <th>Aksi</th>
-                </tr>
-            </thead>
+            <!-- BUKU -->
+            <td>
+                <?php if (!empty($p['buku'])): ?>
+                    <?php foreach ($p['buku'] as $b): ?>
+                        <?= $b['judul'] ?><br>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    -
+                <?php endif; ?>
+            </td>
 
-            <tbody>
+            <!-- TANGGAL -->
+            <td><?= $p['tanggal_pinjam'] ?></td>
+            <td><?= $p['tanggal_kembali'] ?></td>
 
-                <?php foreach ($peminjaman as $p): ?>
+            <!-- STATUS PEMINJAMAN -->
+            <td>
+                <?php if ($p['status'] == 'menunggu_konfirmasi'): ?>
+                    <span style="color:orange;">Menunggu Konfirmasi</span>
 
-                    <?php
-                    $status = $p['status'];
+                <?php elseif ($p['status'] == 'menunggu_pembayaran'): ?>
+                    <span style="color:blue;">Menunggu Pembayaran</span>
 
-                    if ($status == 'dipinjam') {
-                        $badge = 'primary';
-                    } elseif ($status == 'diproses') {
-                        $badge = 'info';
-                    } elseif ($status == 'diperpanjang') {
-                        $badge = 'warning';
-                    } elseif ($status == 'kembali') {
-                        $badge = 'success';
-                    } elseif ($status == 'terlambat') {
-                        $badge = 'danger';
-                    } else {
-                        $badge = 'secondary';
-                    }
-                    ?>
+                <?php elseif ($p['status'] == 'diantar'): ?>
+                    <span style="color:blue;">Sedang Diantar</span>
 
-                    <tr>
-
-                        <td class="text-center">
-                            <?= $p['id_peminjaman'] ?>
-                        </td>
-
-                        <td>
-                            <?= $p['nama'] ?? '-' ?>
-                        </td>
-
-                        <td>
-                            <?= $p['tanggal_pinjam'] ?? '-' ?>
-                        </td>
-
-                        <td>
-                            <?= $p['tanggal_kembali'] ?? '-' ?>
-                        </td>
-
-                        <td>
-                            <span class="badge bg-<?= $badge ?>">
-                                <?= ucfirst($status) ?>
-                            </span>
-                        </td>
+                <?php elseif ($p['status'] == 'selesai'): ?>
+                    <span style="color:green;">Selesai</span>
+                <?php elseif ($p['status'] == 'kembali'): ?>
+                    <span style="color:purple;">Sudah Dikembalikan</span>
 
 
+                <?php else: ?>
+                    <span>Dipinjam</span>
+                <?php endif; ?>
 
-                        <td style="white-space:nowrap;">
+            </td>
 
-                            <a href="<?= base_url('peminjaman/detail/' . $p['id_peminjaman']) ?>"
-                                class="btn btn-sm btn-info">
-                                Detail
-                            </a>
+            <!-- 🔥 PENGANTARAN (INI YANG KAMU TANYA) -->
+            <td>
+                <?php if ($p['status_pengiriman'] == 'menunggu_konfirmasi'): ?>
+                    <span style="color:orange;">Menunggu Konfirmasi</span>
 
-                            <a href="<?= base_url('peminjaman/edit/' . $p['id_peminjaman']) ?>"
-                                class="btn btn-sm btn-warning">
-                                Edit
-                            </a>
+                    <!-- 👮 PETUGAS SAJA -->
+                    <?php if (session()->get('role') == 'petugas'): ?>
+                        <a href="<?= base_url('peminjaman/konfirmasi/' . $p['id_peminjaman']) ?>">
+                            Konfirmasi
+                        </a>
+                    <?php endif; ?>
 
-                            <a href="<?= base_url('peminjaman/perpanjang/' . $p['id_peminjaman']) ?>"
-                                class="btn btn-sm btn-primary"
-                                onclick="return confirm('Perpanjang buku ini?')">
-                                Perpanjang
-                            </a>
+                <?php elseif ($p['status_pengiriman'] == 'menunggu_pembayaran'): ?>
 
-                            <a href="<?= base_url('peminjaman/kembalikan/' . $p['id_peminjaman']) ?>"
-                                class="btn btn-sm btn-success"
-                                onclick="return confirm('Kembalikan buku?')">
-                                Kembalikan
-                            </a>
+                    <!-- 👤 HANYA ANGGOTA -->
+                    <?php if (session()->get('role') == 'anggota'): ?>
+                        <a href="<?= base_url('peminjaman/pembayaran/' . $p['id_peminjaman']) ?>">
+                            Bayar Ongkir
+                        </a>
+                    <?php else: ?>
+                        <span>Menunggu Pembayaran</span>
+                    <?php endif; ?>
 
-                            <?php if ($p['status'] == 'diproses'): ?>
-                                <a href="<?= base_url('peminjaman/konfirmasi/' . $p['id_peminjaman']) ?>"
-                                    class="btn btn-sm btn-secondary"
-                                    onclick="return confirm('Konfirmasi peminjaman?')">
-                                    Konfirmasi
-                                </a>
-                            <?php endif; ?>
+                <?php elseif ($p['status_pengiriman'] == 'diantar'): ?>
+                    <span style="color:blue;">Sedang Diantar</span>
 
-                            <a href="<?= base_url('peminjaman/delete/' . $p['id_peminjaman']) ?>"
-                                class="btn btn-sm btn-danger"
-                                onclick="return confirm('Hapus data ini?')">
-                                Hapus
-                            </a>
+                    <!-- 👮 PETUGAS -->
+                    <?php if (session()->get('role') == 'petugas'): ?>
+                        <a href="<?= base_url('peminjaman/selesai/' . $p['id_peminjaman']) ?>">
+                            Tandai Selesai
+                        </a>
 
-                        </td>
+                    <?php endif; ?>
 
-                    </tr>
+                <?php elseif ($p['status_pengiriman'] == 'selesai'): ?>
+                    <span style="color:green;">Selesai</span>
 
-                <?php endforeach; ?>
+                <?php else: ?>
+                    <span>-</span>
+                <?php endif; ?>
+            </td>
+            <!-- AKSI -->
+            <td>
+                <a href="<?= base_url('peminjaman/detail/' . $p['id_peminjaman']) ?>">Detail</a>
+                <a href="<?= base_url('peminjaman/edit/' . $p['id_peminjaman']) ?>">Edit</a>
+                <a href="<?= base_url('peminjaman/delete/' . $p['id_peminjaman']) ?>">Hapus</a>
+                <?php if (session()->get('role') == 'petugas'): ?>
 
-            </tbody>
+                    <?php if (strtolower(trim($p['status'])) == 'dipinjam'): ?>
+                        <a href="<?= base_url('peminjaman/kembalikan/' . $p['id_peminjaman']) ?>"
+                            style="color:white; background:green; padding:5px 10px; border-radius:5px; text-decoration:none;"
+                            onclick="return confirm('Yakin ingin mengembalikan buku ini?')">
+                            🔄 Kembalikan
+                        </a>
+                    <?php else: ?>
+                        <span style="color:green;">Sudah Dikembalikan</span>
+                    <?php endif; ?>
 
-        </table>
+                <?php endif; ?>
 
-    </div>
 
-</div>
+                <a href="#" onclick="perpanjang(<?= $p['id_peminjaman'] ?>)">Perpanjang</a>
+            </td>
+
+        </tr>
+    <?php endforeach; ?>
+
+</table>
+
+<!-- ================= SCRIPT ================= -->
+
+<script>
+    function perpanjang(id) {
+        let hari = prompt("Masukkan jumlah hari perpanjangan:");
+
+        if (hari) {
+            window.location.href = "<?= base_url('peminjaman/perpanjang/') ?>" + id + "/" + hari;
+        }
+    }
+
+    function bayar(id) {
+        let metode = prompt("Pilih pembayaran: cash / dana / transfer bank");
+
+        if (metode) {
+            alert("Pembayaran berhasil via " + metode);
+
+            window.location.href = "<?= base_url('peminjaman/bayar/') ?>" + id;
+        }
+    }
+</script>
 
 <?= $this->endSection() ?>

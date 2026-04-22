@@ -10,14 +10,31 @@ class PeminjamanModel extends Model
     protected $primaryKey = 'id_peminjaman';
 
     protected $allowedFields = [
-        'nama peminjam',
-
+        'id_anggota',
+        'id_petugas',
         'tanggal_pinjam',
         'tanggal_kembali',
-        'metode',
-
         'status',
-        'perpanjang',
-        'ongkir'
+        'metode_pengantaran',
+        'status_pengiriman'
     ];
+
+    // ================= GET ALL =================
+    public function getAll($keyword = null, $userId = null, $role = null)
+    {
+        $builder = $this->db->table('peminjaman');
+
+        $builder->select('peminjaman.*, anggota.user_id');
+        $builder->join('anggota', 'anggota.id_anggota = peminjaman.id_anggota');
+
+        if ($role == 'anggota' && $userId) {
+            $builder->where('peminjaman.id_anggota', $userId);
+        }
+
+        if ($keyword) {
+            $builder->like('anggota.user_id', $keyword);
+        }
+
+        return $builder->get()->getResultArray();
+    }
 }
