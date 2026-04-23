@@ -10,6 +10,7 @@ class KategoriModel extends Model
     protected $primaryKey = 'id_kategori';
 
     protected $allowedFields = [
-        'nama_kategori'
+        'nama_kategori',
+        'id_kategori'
     ];
 }

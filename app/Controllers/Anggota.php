@@ -3,14 +3,17 @@
 namespace App\Controllers;
 
 use App\Models\AnggotaModel;
+use App\Models\UsersModel;
 
 class Anggota extends BaseController
 {
     protected $anggotaModel;
+    protected $usersModel;
 
     public function __construct()
     {
         $this->anggotaModel = new AnggotaModel();
+        $this->usersModel = new UsersModel();
     }
 
     // 🔍 LIST + SEARCH
@@ -34,7 +37,8 @@ class Anggota extends BaseController
     // 📥 FORM TAMBAH
     public function create()
     {
-        return view('anggota/create');
+        $data['users'] = $this->usersModel->findAll();
+        return view('anggota/create', $data);
     }
 
     // 💾 SIMPAN

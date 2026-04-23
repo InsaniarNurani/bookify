@@ -57,14 +57,27 @@ class Peminjaman extends BaseController
     {
         $selectedBuku = $this->request->getPost('buku');
 
-        if (!$selectedBuku || count($selectedBuku) > 2) {
+        // Validasi buku
+        if (!$selectedBuku) {
+            return redirect()->back()->with('error', 'Silakan pilih minimal 1 buku');
+        }
+
+        if (count($selectedBuku) > 2) {
             return redirect()->back()->with('error', 'Pilih maksimal 2 buku');
         }
 
+        // Validasi session anggota
         $id_anggota = session()->get('id_anggota');
-
         if (!$id_anggota) {
             return redirect()->back()->with('error', 'Session anggota tidak ditemukan');
+        }
+
+        // Validasi tanggal
+        $tanggal_pinjam = $this->request->getPost('tanggal_pinjam');
+        $tanggal_kembali = $this->request->getPost('tanggal_kembali');
+
+        if (!$tanggal_pinjam || !$tanggal_kembali) {
+            return redirect()->back()->with('error', 'Tanggal pinjam dan kembali harus diisi');
         }
 
         // ================= STATUS =================
@@ -79,15 +92,18 @@ class Peminjaman extends BaseController
         // ================= SIMPAN PEMINJAMAN =================
         $this->peminjamanModel->save([
             'id_anggota' => $id_anggota,
-            'id_petugas' => $this->request->getPost('id_petugas'),
-            'tanggal_pinjam' => $this->request->getPost('tanggal_pinjam'),
-            'tanggal_kembali' => $this->request->getPost('tanggal_kembali'),
+            'tanggal_pinjam' => $tanggal_pinjam,
+            'tanggal_kembali' => $tanggal_kembali,
             'status' => $status,
             'metode_pengantaran' => $this->request->getPost('metode'),
             'status_pengiriman' => $status_pengiriman
         ]);
 
         $id = $this->peminjamanModel->insertID();
+
+        if (!$id) {
+            return redirect()->back()->with('error', 'Gagal menyimpan peminjaman');
+        }
 
         // ================= DETAIL + KURANGI STOK =================
         foreach ($selectedBuku as $buku) {

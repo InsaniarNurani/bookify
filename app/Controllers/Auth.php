@@ -42,8 +42,8 @@ class Auth extends Controller
 
                 // ================= SET SESSION =================
                 $session->set([
-                    'id'          => $users['id'],
-                    'id_anggota'  => $idAnggota, // 🔥 INI YANG PENTING
+                    'id_user'     => $users['id'],   // 🔥 ganti dari "id"
+                    'id_anggota'  => $idAnggota,
                     'nama'        => $users['nama'],
                     'email'       => $users['email'],
                     'username'    => $users['username'],
@@ -51,7 +51,6 @@ class Auth extends Controller
                     'foto'        => $users['foto'],
                     'logged_in'   => true
                 ]);
-
                 return redirect()->to('/dashboard');
             } else {
                 $session->setFlashdata('salahpw', 'Password salah');

@@ -4,7 +4,9 @@
 <h3>Data Rak</h3>
 
 <!-- Tombol Tambah -->
-<a href="<?= base_url('rak/create') ?>">+ Tambah Rak</a>
+<?php if (session()->get('role') == 'admin') : ?>
+    <a href="<?= base_url('rak/create') ?>">+ Tambah Rak</a>
+<?php endif; ?>
 
 <br><br>
 
@@ -24,16 +26,14 @@
             <td><?= $r['lokasi'] ?></td>
             <td>
 
-                <a href="<?= base_url('rak/edit/' . $r['id_rak']) ?>">
-                    Edit
-                </a>
-
-                |
-
-                <a href="<?= base_url('rak/delete/' . $r['id_rak']) ?>"
-                    onclick="return confirm('Yakin mau hapus rak ini?')">
-                    Hapus
-                </a>
+                <?php if (session()->get('role') == 'admin') : ?>
+                    <a href="<?= base_url('rak/edit/' . $r['id_rak']) ?>">Edit</a>
+                    |
+                    <a href="<?= base_url('rak/delete/' . $r['id_rak']) ?>"
+                        onclick="return confirm('Yakin mau hapus rak ini?')">
+                        Hapus
+                    </a>
+                <?php endif; ?>
 
             </td>
         </tr>

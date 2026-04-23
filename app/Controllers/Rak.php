@@ -16,10 +16,19 @@ class Rak extends BaseController
     // ================= INDEX =================
     public function index()
     {
-        $data['rak'] = $this->rak->findAll();
+        $session = session();
+
+        // 🔒 hanya admin yang boleh akses
+        if ($session->get('role') !== 'admin') {
+            return redirect()->to('/dashboard')->with('error', 'Akses ditolak');
+        }
+
+        $model = new \App\Models\RakModel();
+
+        $data['rak'] = $model->findAll();
+
         return view('rak/index', $data);
     }
-
     // ================= CREATE =================
     public function create()
     {

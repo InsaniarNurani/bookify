@@ -37,9 +37,11 @@
    <a href="<?= base_url('pengembalian') ?>">
        Pengembalian
    </a><br>
-   <a href="<?= base_url('rak') ?>">
-       Rak
-   </a><br>
+   <?php if (session()->get('role') == 'admin') : ?>
+       <a href="<?= base_url('rak') ?>">
+           Rak
+       </a><br>
+   <?php endif; ?>
    <a href="<?= base_url('Anggota') ?>">
        Anggota
    </a><br>

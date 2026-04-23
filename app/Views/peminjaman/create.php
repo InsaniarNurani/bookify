@@ -3,11 +3,7 @@
 
 <h3>Pinjam Buku</h3>
 
-<?php if (session()->getFlashdata('error')): ?>
-    <div style="color:red;">
-        <?= session()->getFlashdata('error') ?>
-    </div>
-<?php endif; ?>
+
 
 <form method="post" action="<?= base_url('peminjaman/store') ?>">
 
