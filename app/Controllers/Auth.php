@@ -62,7 +62,60 @@ class Auth extends Controller
             return redirect()->to('/login');
         }
     }
+    public function register()
+    {
+        return view('auth/register');
+    }
 
+    public function prosesRegister()
+    {
+        $usersModel = new UsersModel();
+        $anggotaModel = new AnggotaModel();
+
+        $username = $this->request->getPost('username');
+        $password = $this->request->getPost('password');
+        $nama     = $this->request->getPost('nama');
+        $email    = $this->request->getPost('email');
+        $nis      = $this->request->getPost('nis');
+        $alamat   = $this->request->getPost('alamat');
+        $no_hp    = $this->request->getPost('no_hp');
+
+        // CEK USERNAME
+        if ($usersModel->where('username', $username)->first()) {
+            return redirect()->back()->with('error', 'Username sudah ada');
+        }
+
+        // SIMPAN USERS
+        $usersModel->save([
+            'username' => $username,
+            'password' => password_hash($password, PASSWORD_DEFAULT),
+            'nama'     => $nama,
+            'email'    => $email,
+            'role'     => 'anggota'
+        ]);
+
+        $userId = $usersModel->insertID();
+
+        if (!$userId) {
+            dd('Gagal simpan user', $usersModel->errors());
+        }
+
+        // SIMPAN ANGGOTA
+        $anggotaModel->save([
+            'user_id'        => $userId,
+            'nis'            => $nis,
+            'alamat'         => $alamat,
+            'no_hp'          => $no_hp,
+            'tanggal_daftar' => date('Y-m-d')
+        ]);
+
+        if ($anggotaModel->errors()) {
+            dd('Gagal simpan anggota', $anggotaModel->errors());
+        }
+
+
+        return redirect()->to('/login')->with('success', 'Registrasi berhasil');
+    }
     public function logout()
     {
         session()->destroy();

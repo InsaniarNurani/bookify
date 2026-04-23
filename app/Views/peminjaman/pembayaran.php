@@ -33,6 +33,9 @@
         </div>
 
 
+        <!-- UPLOAD BUKTI -->
+        <label><b>Upload Bukti Pembayaran</b></label><br><br>
+        <input type="file" name="bukti" accept="image/*" required>
 
     </div>
 

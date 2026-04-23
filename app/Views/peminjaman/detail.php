@@ -11,8 +11,8 @@
     </tr>
 
     <tr>
-        <th>Anggota</th>
-        <td><?= $peminjaman['user_id'] ?? '-' ?></td>
+        <th>Nama Anggota</th>
+        <td><?= $peminjaman['nama_anggota'] ?? '-' ?></td>
     </tr>
 
     <tr>
@@ -38,7 +38,11 @@
 </table>
 
 <br>
-
+<a href="<?= base_url('peminjaman/printDetail/' . $peminjaman['id_peminjaman']) ?>"
+    target="_blank"
+    style="background:black;color:white;padding:6px 10px;border-radius:5px;text-decoration:none;">
+    🖨️ Print
+</a>
 <a href="<?= base_url('peminjaman') ?>">⬅ Kembali</a>
 
 <?= $this->endSection() ?>

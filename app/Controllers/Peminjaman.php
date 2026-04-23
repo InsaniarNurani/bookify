@@ -145,18 +145,33 @@ class Peminjaman extends BaseController
     public function prosesBayar($id)
     {
         $metode = $this->request->getPost('metode');
+        $file = $this->request->getFile('bukti');
 
         if (!$metode) {
             return redirect()->back()->with('error', 'Pilih metode pembayaran');
         }
 
+        // ================= UPLOAD FILE =================
+        $namaFile = null;
+
+        if ($file && $file->isValid() && !$file->hasMoved()) {
+
+            // buat nama random
+            $namaFile = $file->getRandomName();
+
+            // simpan ke folder public/uploads/bukti
+            $file->move('uploads/bukti', $namaFile);
+        }
+
+        // ================= UPDATE DB =================
         $this->peminjamanModel->update($id, [
             'status_pengiriman' => 'diantar',
             'status' => 'diantar',
-            'metode_pembayaran' => $metode
+            'metode_pembayaran' => $metode,
+            'bukti_pembayaran' => $namaFile
         ]);
 
-        return redirect()->to('/peminjaman');
+        return redirect()->to('/peminjaman')->with('success', 'Pembayaran berhasil');
     }
 
     // ================= SELESAI =================
@@ -170,30 +185,45 @@ class Peminjaman extends BaseController
         return redirect()->back();
     }
     public function kembalikan($id)
+
     {
+        // ambil data peminjaman
         $peminjaman = $this->peminjamanModel->find($id);
 
         if (!$peminjaman) {
-            return redirect()->to('peminjaman')->with('error', 'Data tidak ditemukan');
+            return redirect()->back()->with('error', 'Data tidak ditemukan');
         }
 
-        // 1. UPDATE STATUS PEMINJAMAN
+        // ================= SIMPAN KE TABEL PENGEMBALIAN =================
+        $pengembalianModel = new \App\Models\PengembalianModel();
+
+        $pengembalianModel->save([
+            'id_peminjaman' => $id,
+            'tanggal_kembali' => date('Y-m-d')
+        ]);
+
+        // ================= AMBIL DETAIL BUKU =================
+        $detail = $this->detailModel
+            ->where('id_peminjaman', $id)
+            ->findAll();
+
+        // ================= TAMBAH STOK =================
+        foreach ($detail as $d) {
+            $buku = $this->bukuModel->find($d['id_buku']);
+
+            if ($buku) {
+                $this->bukuModel->update($d['id_buku'], [
+                    'jumlah' => $buku['jumlah'] + $d['jumlah']
+                ]);
+            }
+        }
+
+        // ================= UPDATE STATUS =================
         $this->peminjamanModel->update($id, [
             'status' => 'kembali'
         ]);
 
-        // 2. SIMPAN KE TABEL PENGEMBALIAN
-        $pengembalianModel = new PengembalianModel();
-
-        $pengembalianModel->insert([
-            'id_peminjaman'   => $id,
-            'tanggal_kembali' => date('Y-m-d'),
-            'denda'           => 0,
-            'status'          => 'dikembalikan'
-        ]);
-
-        return redirect()->to('peminjaman')
-            ->with('success', 'Buku berhasil dikembalikan dan tercatat di pengembalian');
+        return redirect()->to('/peminjaman')->with('success', 'Buku berhasil dikembalikan');
     }
     // ================= DELETE =================
     public function delete($id)
@@ -203,13 +233,18 @@ class Peminjaman extends BaseController
     }
     public function detail($id)
     {
-        $db = \Config\Database::connect(); // ✅ ini yang benar
+        $db = \Config\Database::connect();
 
         $builder = $db->table('peminjaman');
 
-        $builder->select('peminjaman.*, anggota.user_id, petugas.user_id');
+        $builder->select('
+        peminjaman.*,
+        users.nama as nama_anggota
+    ');
+
         $builder->join('anggota', 'anggota.id_anggota = peminjaman.id_anggota', 'left');
-        $builder->join('petugas', 'petugas.id_petugas = peminjaman.id_petugas', 'left');
+        $builder->join('users', 'users.id = anggota.user_id', 'left');
+
         $builder->where('peminjaman.id_peminjaman', $id);
 
         $data['peminjaman'] = $builder->get()->getRowArray();
@@ -225,15 +260,63 @@ class Peminjaman extends BaseController
         $data = $this->peminjamanModel->find($id);
 
         if (!$data) {
-            return redirect()->to('/peminjaman')->with('error', 'Data tidak ditemukan');
+            return redirect()->back()->with('error', 'Data tidak ditemukan');
         }
 
-        $newDate = date('Y-m-d', strtotime($data['tanggal_kembali'] . " +$hari days"));
+        // 🔥 TAMBAH TANGGAL KEMBALI
+        $tanggal_lama = $data['tanggal_kembali'];
 
+        $tanggal_baru = date('Y-m-d', strtotime($tanggal_lama . ' +' . $hari . ' days'));
+
+        // 🔥 UPDATE
         $this->peminjamanModel->update($id, [
-            'tanggal_kembali' => $newDate
+            'tanggal_kembali' => $tanggal_baru,
+            'status' => 'diperpanjang',
+            'lama_perpanjangan' => $hari
         ]);
 
-        return redirect()->to('/peminjaman')->with('success', 'Perpanjangan berhasil');
+        return redirect()->to('/peminjaman')->with('success', 'Berhasil diperpanjang');
+    }
+    public function print()
+    {
+        $peminjaman = $this->peminjamanModel->getAll();
+
+        foreach ($peminjaman as &$p) {
+            $p['buku'] = $this->detailModel
+                ->select('buku.judul')
+                ->join('buku', 'buku.id_buku = detail_peminjaman.id_buku')
+                ->where('detail_peminjaman.id_peminjaman', $p['id_peminjaman'])
+                ->findAll();
+        }
+
+        return view('peminjaman/print', [
+            'peminjaman' => $peminjaman
+        ]);
+    }
+    public function printDetail($id)
+    {
+        $db = \Config\Database::connect();
+
+        $builder = $db->table('peminjaman');
+
+        $builder->select('
+        peminjaman.*,
+        u1.username as nama_anggota,
+        u2.username as nama_petugas
+    ');
+
+        // join anggota → users
+        $builder->join('anggota', 'anggota.id_anggota = peminjaman.id_anggota', 'left');
+        $builder->join('users u1', 'u1.id = anggota.user_id', 'left');
+
+        // join petugas → users
+        $builder->join('petugas', 'petugas.id_petugas = peminjaman.id_petugas', 'left');
+        $builder->join('users u2', 'u2.id = petugas.user_id', 'left');
+
+        $builder->where('peminjaman.id_peminjaman', $id);
+
+        $data['peminjaman'] = $builder->get()->getRowArray();
+
+        return view('peminjaman/print_detail', $data);
     }
 }
