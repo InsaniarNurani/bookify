@@ -1,17 +1,49 @@
+<?= $this->extend('layouts/main') ?>
+<?= $this->section('content') ?>
+
 <h3>Pembayaran Ongkir</h3>
 
-<form method="post" action="<?= base_url('peminjaman/bayar/' . $id) ?>">
+<h4>Rincian Pembayaran</h4>
 
-    <p>Pilih Metode:</p>
+<?php $ongkir = 10000; ?>
+<?php $total = ($total ?? 0) + $ongkir; ?>
 
-    <button type="submit" name="metode" value="dana"
-        style="background:#00c853;color:white;padding:10px;border:none;">
-        Bayar via DANA
-    </button>
+<p><b>Ongkir:</b> Rp <?= number_format($ongkir, 0, ',', '.') ?></p>
+<p><b>Total Bayar:</b> Rp <?= number_format($total, 0, ',', '.') ?></p>
+<hr>
 
-    <button type="submit" name="metode" value="transfer"
-        style="background:#2962ff;color:white;padding:10px;border:none;">
+<form method="post" action="<?= base_url('peminjaman/bayar/' . $id) ?>" enctype="multipart/form-data">
+
+    <p><b>Pilih Metode Pembayaran:</b></p>
+
+    <label>
+        <input type="radio" name="metode" value="dana" required>
+        DANA
+    </label><br>
+
+    <label>
+        <input type="radio" name="metode" value="transfer">
         Transfer Bank
+    </label><br>
+
+    <label>
+        <input type="radio" name="metode" value="cod">
+        COD (Bayar di Tempat)
+    </label>
+
+    <br><br>
+
+    <p><b>Upload Bukti (WAJIB jika transfer/DANA):</b></p>
+    <input type="file" name="bukti" accept="image/*">
+
+    <br><br>
+
+    <button type="submit" style="padding:10px 20px;background:black;color:white;">
+        Konfirmasi Pembayaran
     </button>
 
 </form>
+
+</form>
+
+<?= $this->endSection() ?>

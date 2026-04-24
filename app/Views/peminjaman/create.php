@@ -43,13 +43,31 @@
 
     <div style="display:flex; flex-wrap:wrap; gap:15px;">
         <?php foreach ($buku as $b): ?>
-            <label style="width:200px; border:1px solid #ccc; padding:10px; text-align:center;">
+            <label style="width:200px; border:1px solid #ccc; padding:10px; text-align:center; border-radius:8px;">
 
-                <input type="checkbox" name="id_buku[]" value="<?= $b['id_buku'] ?>" class="buku-check"><br>
+                <!-- checkbox -->
+                <input type="checkbox"
+                    name="id_buku[]"
+                    value="<?= $b['id_buku'] ?>"
+                    class="buku-check"
+                    <?= ($b['tersedia'] ?? 0) <= 0 ? 'disabled' : '' ?>><br>
 
+                <!-- cover -->
                 <img src="<?= base_url('uploads/buku/' . $b['cover']) ?>" width="80"><br>
 
-                <?= $b['judul'] ?>
+                <!-- judul -->
+                <b><?= $b['judul'] ?></b><br>
+
+                <!-- stok -->
+                <?php if (($b['tersedia'] ?? 0) > 0): ?>
+                    <small style="color:green;">
+                        Tersedia: <?= $b['tersedia'] ?>
+                    </small>
+                <?php else: ?>
+                    <small style="color:red;">
+                        Stok Habis
+                    </small>
+                <?php endif; ?>
 
             </label>
         <?php endforeach; ?>

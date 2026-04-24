@@ -37,6 +37,9 @@
    <a href="<?= base_url('pengembalian') ?>">
        Pengembalian
    </a><br>
+   <a href="<?= base_url('transaksi') ?>">
+       Transaksi
+   </a><br>
    <?php if (session()->get('role') == 'admin') : ?>
        <a href="<?= base_url('rak') ?>">
            Rak

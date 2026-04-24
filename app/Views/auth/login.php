@@ -54,7 +54,11 @@
                         <i class="bi bi-person-plus"></i> Daftar Baru
                     </a>
                 </div>
-
+                <div>
+                    <a href="<?= base_url('restore') ?>" class="btn btn-outline-danger btn-sm">
+                        <i class="bi bi-database"></i> Restore DB
+                    </a>
+                </div>
             </div>
         </div>
     </div>

@@ -16,51 +16,87 @@ class Pengembalian extends BaseController
         $this->peminjamanModel = new PeminjamanModel();
     }
 
-    // READ (LIST)
+    // ======================
+    // LIST DATA
+    // ======================
     public function index()
     {
         $model = new \App\Models\PengembalianModel();
 
         $data['pengembalian'] = $model
-            ->select('
-            pengembalian.*,
-            peminjaman.tanggal_pinjam,
-            anggota.id_anggota,
-            users.nama as nama_anggota,
-            petugas.jabatan
-        ')
+            ->select('pengembalian.*, peminjaman.tanggal_pinjam,
+                      anggota.id_anggota, users.nama as nama_anggota')
             ->join('peminjaman', 'peminjaman.id_peminjaman = pengembalian.id_peminjaman', 'left')
             ->join('anggota', 'anggota.id_anggota = peminjaman.id_anggota', 'left')
             ->join('users', 'users.id = anggota.user_id', 'left')
-            ->join('petugas', 'petugas.id_petugas = peminjaman.id_petugas', 'left')
             ->findAll();
 
         return view('pengembalian/index', $data);
     }
 
-    // CREATE FORM
-    public function create()
-    {
-        $data['peminjaman'] = $this->peminjamanModel->findAll();
-        return view('pengembalian/create', $data);
-    }
-
-    // STORE DATA
+    // ======================
+    // STORE (AUTO DENDA + STATUS)
+    // ======================
     public function store()
     {
+        $idPeminjaman = $this->request->getPost('id_peminjaman');
+
+        $peminjaman = $this->peminjamanModel->find($idPeminjaman);
+
+        if (!$peminjaman) {
+            return redirect()->back()->with('error', 'Data peminjaman tidak ditemukan');
+        }
+
+        // 🔥 AMANKAN FORMAT TANGGAL
+        $tanggalDikembalikan = date('Y-m-d');
+        $jatuhTempo = date('Y-m-d', strtotime($peminjaman['tanggal_kembali']));
+
+        // 🔥 HITUNG SELISIH
+        $selisihHari = (strtotime($tanggalDikembalikan) - strtotime($jatuhTempo)) / 86400;
+
+        // 🔥 DEFAULT
+        $denda = 0;
+        $statusPengembalian = 'tepat_waktu';
+        $statusBayar = null;
+
+        // 🔥 JIKA TERLAMBAT
+        if ($selisihHari > 0) {
+            $denda = $selisihHari * 1000;
+            $statusPengembalian = 'terlambat';
+            $statusBayar = 'belum_bayar';
+        }
+
+        // 🔥 SIMPAN
         $this->pengembalianModel->save([
-            'id_peminjaman' => $this->request->getPost('id_peminjaman'),
-            'tanggal_dikembalikan' => $this->request->getPost('tanggal_dikembalikan'),
-            'denda' => $this->request->getPost('denda'),
+            'id_peminjaman' => $idPeminjaman,
+            'tanggal_dikembalikan' => $tanggalDikembalikan,
+            'denda' => $denda,
+            'status_pengembalian' => $statusPengembalian,
+            'status_bayar' => $statusBayar
         ]);
 
-        return redirect()->to('/pengembalian');
+        return redirect()->to('/pengembalian')->with('success', 'Berhasil dikembalikan');
     }
 
+    // ======================
+    // BAYAR DENDA
+    // ======================
+    public function bayar($id)
+    {
+        $this->pengembalianModel->update($id, [
+            'status_bayar' => 'lunas'
+        ]);
+
+        return redirect()->back()->with('success', 'Denda dibayar');
+    }
+
+    // ======================
     // DETAIL
+    // ======================
     public function detail($id)
     {
         $data['pengembalian'] = $this->pengembalianModel
+            ->select('pengembalian.*, peminjaman.tanggal_pinjam')
             ->join('peminjaman', 'peminjaman.id_peminjaman = pengembalian.id_peminjaman', 'left')
             ->where('id_pengembalian', $id)
             ->first();
@@ -68,28 +104,22 @@ class Pengembalian extends BaseController
         return view('pengembalian/detail', $data);
     }
 
-    // EDIT FORM
-    public function edit($id)
-    {
-        $data['pengembalian'] = $this->pengembalianModel->find($id);
-        $data['peminjaman'] = $this->peminjamanModel->findAll();
-
-        return view('pengembalian/edit', $data);
-    }
-
-    // UPDATE
+    // ======================
+    // UPDATE (TANPA DENDA MANUAL)
+    // ======================
     public function update($id)
     {
         $this->pengembalianModel->update($id, [
             'id_peminjaman' => $this->request->getPost('id_peminjaman'),
-            'tanggal_dikembalikan' => $this->request->getPost('tanggal_dikembalikan'),
-            'denda' => $this->request->getPost('denda'),
+            'tanggal_dikembalikan' => $this->request->getPost('tanggal_dikembalikan')
         ]);
 
         return redirect()->to('/pengembalian');
     }
 
+    // ======================
     // DELETE
+    // ======================
     public function delete($id)
     {
         $this->pengembalianModel->delete($id);

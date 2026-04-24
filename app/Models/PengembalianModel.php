@@ -10,11 +10,11 @@ class PengembalianModel extends Model
     protected $primaryKey = 'id_pengembalian';
 
     protected $allowedFields = [
-        'id_pengembalian',
+
         'id_peminjaman',
-        'tanggal_pinjam',
         'tanggal_dikembalikan',
         'denda',
-
+        'status_pengembalian',
+        'status_bayar'
     ];
 }

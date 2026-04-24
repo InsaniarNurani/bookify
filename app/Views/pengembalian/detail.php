@@ -9,9 +9,7 @@
             ← Kembali ke Peminjaman
         </a>
     <?php else: ?>
-        <a href="<?= base_url('buku') ?>" class="btn btn-secondary">
-            ← Kembali
-        </a>
+
     <?php endif; ?>
 
     <tr>

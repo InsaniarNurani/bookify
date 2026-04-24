@@ -1,48 +1,89 @@
 <?= $this->extend('layouts/main') ?>
 <?= $this->section('content') ?>
 
-<h3>Detail Peminjaman</h3>
+<!-- 🔥 PRINT AREA START -->
+<div id="printArea">
 
-<table border="1" cellpadding="8">
+    <h3>Detail Peminjaman</h3>
 
-    <tr>
-        <th>ID Peminjaman</th>
-        <td><?= $peminjaman['id_peminjaman'] ?></td>
-    </tr>
+    <p><b>Status:</b> <?= $peminjaman['status'] ?></p>
+    <p><b>Tanggal Pinjam:</b> <?= $peminjaman['tanggal_pinjam'] ?></p>
+    <p><b>Tanggal Kembali:</b> <?= $peminjaman['tanggal_kembali'] ?></p>
+    <p><b>Metode:</b> <?= $peminjaman['metode_pengantaran'] ?></p>
 
-    <tr>
-        <th>Nama Anggota</th>
-        <td><?= $peminjaman['nama_anggota'] ?? '-' ?></td>
-    </tr>
+    <hr>
 
-    <tr>
-        <th>Petugas</th>
-        <td><?= $peminjaman['nama_petugas'] ?? '-' ?></td>
-    </tr>
+    <h4>Detail Buku</h4>
 
-    <tr>
-        <th>Tanggal Pinjam</th>
-        <td><?= $peminjaman['tanggal_pinjam'] ?></td>
-    </tr>
+    <table border="1" cellpadding="8" cellspacing="0" width="100%">
+        <tr>
+            <th>Judul</th>
+            <th>Cover</th>
 
-    <tr>
-        <th>Tanggal Kembali</th>
-        <td><?= $peminjaman['tanggal_kembali'] ?></td>
-    </tr>
+            <th>Jumlah Pinjam</th>
+        </tr>
 
-    <tr>
-        <th>Status</th>
-        <td><?= $peminjaman['status'] ?></td>
-    </tr>
+        <?php foreach ($peminjaman['buku'] as $b): ?>
+            <tr>
+                <td><?= $b['judul'] ?></td>
+                <td>
+                    <img src="<?= base_url('uploads/buku/' . $b['cover']) ?>" width="60">
+                </td>
 
-</table>
+                <td>
+                    <?= $b['jumlah'] ?? 1 ?>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    </table>
+
+</div>
+<!-- 🔥 PRINT AREA END -->
 
 <br>
-<a href="<?= base_url('peminjaman/printDetail/' . $peminjaman['id_peminjaman']) ?>"
-    target="_blank"
-    style="background:black;color:white;padding:6px 10px;border-radius:5px;text-decoration:none;">
-    🖨️ Print
-</a>
-<a href="<?= base_url('peminjaman') ?>">⬅ Kembali</a>
+
+<!-- 🔘 BUTTON ACTION -->
+<div class="no-print" style="margin-bottom:15px;">
+
+    <a href="<?= base_url('peminjaman') ?>"
+        style="padding:8px 12px; background:#ccc; text-decoration:none; border-radius:5px;">
+        ⬅ Kembali
+    </a>
+
+    <button onclick="window.print()"
+        style="padding:8px 12px; background:green; color:white; border:none; border-radius:5px; margin-left:10px;">
+        🖨 Print
+    </button>
+
+</div>
+
+<!-- 🎯 PRINT STYLE -->
+<style>
+    @media print {
+
+        /* sembunyikan semua */
+        body * {
+            visibility: hidden;
+        }
+
+        /* tampilkan hanya area ini */
+        #printArea,
+        #printArea * {
+            visibility: visible;
+        }
+
+        #printArea {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+        }
+
+        /* tombol & link tidak ikut */
+        .no-print {
+            display: none !important;
+        }
+    }
+</style>
 
 <?= $this->endSection() ?>

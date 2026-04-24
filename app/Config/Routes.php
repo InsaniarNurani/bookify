@@ -160,3 +160,34 @@ $routes->post('/peminjaman/bayar/(:num)', 'Peminjaman::bayar/$1');
 $routes->get('/peminjaman/selesai/(:num)', 'Peminjaman::selesai/$1');
 $routes->get('/peminjaman/kembalikan/(:num)', 'Peminjaman::kembalikan/$1');
 $routes->get('/peminjaman/detail/(:num)', 'Peminjaman::detail/$1');
+
+
+$routes->group('transaksi', function ($routes) {
+
+    // =====================
+    // READ + SEARCH
+    // =====================
+    $routes->get('/', 'Transaksi::index');
+
+    // =====================
+    // CREATE
+    // =====================
+    $routes->get('create', 'Transaksi::create');
+    $routes->post('store', 'Transaksi::store');
+
+    // =====================
+    // EDIT
+    // =====================
+    $routes->get('edit/(:num)', 'Transaksi::edit/$1');
+    $routes->post('update/(:num)', 'Transaksi::update/$1');
+
+    // =====================
+    // DELETE
+    // =====================
+    $routes->get('delete/(:num)', 'Transaksi::delete/$1');
+
+    // =====================
+    // BAYAR (UPDATE STATUS)
+    // =====================
+    $routes->get('bayar/(:num)', 'Transaksi::bayar/$1');
+});

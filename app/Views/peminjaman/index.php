@@ -106,7 +106,30 @@
                 <?php endif; ?>
 
             </td>
+            <td>
+                <a href="<?= base_url('peminjaman/detail/' . $p['id_peminjaman']) ?>">
+                    Detail
+                </a>
+            </td>
+            <td>
+                <?php if (session()->get('role') == 'petugas'): ?>
 
+                    <?php if ($p['status'] == 'dipinjam'): ?>
+                        <a href="<?= base_url('peminjaman/kembalikan/' . $p['id_peminjaman']) ?>"
+                            onclick="return confirm('Yakin ingin mengembalikan buku ini?')"
+                            style="padding:5px 8px; background:orange; color:white; border-radius:5px; text-decoration:none;">
+                            Kembalikan
+                        </a>
+                    <?php endif; ?>
+                    <?php if ($p['status'] == 'terlambat'): ?>
+                        <span style="color:red;">Terlambat</span>
+                    <?php elseif ($p['status'] == 'kembali'): ?>
+                        <span style="color:green;">Kembali</span>
+                    <?php endif; ?>
+
+                <?php endif; ?>
+
+            </td>
             <td>
                 <a href="<?= base_url('peminjaman/delete/' . $p['id_peminjaman']) ?>">Hapus</a>
             </td>
