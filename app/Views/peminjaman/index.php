@@ -131,6 +131,27 @@
 
             </td>
             <td>
+                <?php if (session()->get('role') == 'anggota'): ?>
+
+                    <?php if ($p['status'] == 'dipinjam'): ?>
+                        <br>
+                        <a href="<?= base_url('peminjaman/perpanjang/' . $p['id_peminjaman']) ?>"
+                            onclick="return confirm('Perpanjang 7 hari?')"
+                            style="padding:5px 8px; background:blue; color:white; border-radius:5px; text-decoration:none;">
+                            🔁 Perpanjang
+                        </a>
+                    <?php endif; ?>
+
+                <?php endif; ?>
+            </td>
+            <td>
+                <a href="<?= base_url('penarikan/ajukan/' . $p['id_peminjaman']) ?>"
+                    onclick="return confirm('Ajukan penarikan?')">
+                    🚚 Ajukan Penarikan
+                </a>
+            </td>
+
+            <td>
                 <a href="<?= base_url('peminjaman/delete/' . $p['id_peminjaman']) ?>">Hapus</a>
             </td>
         </tr>

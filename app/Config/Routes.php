@@ -21,17 +21,14 @@ $routes->get('/', 'Home::index', $authFilter);
 $routes->get('dashboard', 'Home::index', $authFilter);
 
 // --- Modul: Users ---
-$routes->group('users', function ($routes) use ($intRole, $allRole) {
-    $routes->get('/', 'Users::index', $intRole);
-    $routes->get('create', 'Users::create');
-    $routes->post('store', 'Users::store');
-    $routes->get('edit/(:num)', 'Users::edit/$1', $allRole);
-    $routes->post('update/(:num)', 'Users::update/$1', $allRole);
-    $routes->get('delete/(:num)', 'Users::delete/$1', $allRole);
-    $routes->get('detail/(:num)', 'Users::detail/$1', $allRole);
-    $routes->get('print', 'Users::print', $allRole);
-    $routes->get('wa/(:num)', 'Users::wa/$1', $allRole);
-});
+$routes->get('/users', 'Users::index', $intRole); // menampilkan data user hanya untuk admin dan petugas
+$routes->get('/users/edit/(:num)', 'Users::edit/$1', $allRole); // form edit user
+$routes->post('/users/update/(:num)', 'Users::update/$1', $allRole); // aksi update user
+$routes->get('/users/delete/(:num)', 'Users::delete/$1', $allRole); // aksi hapus user
+$routes->get('users/detail/(:num)', 'Users::detail/$1', $allRole); // aksi detail user
+$routes->get('users/print', 'Users::print', $allRole); // aksi print data user
+$routes->get('users/wa/(:num)', 'Users::wa/$1', $allRole); // aksi kirim ke whatsapp
+
 
 // --- Modul: Buku ---
 $routes->group('buku', function ($routes) {
@@ -46,26 +43,6 @@ $routes->group('buku', function ($routes) {
     $routes->get('wa/(:num)', 'Buku::wa/$1');
 });
 
-// --- Modul: Peminjaman ---
-$routes->group('peminjaman', ['filter' => 'auth'], function ($routes) {
-    $routes->get('/', 'Peminjaman::index');
-    $routes->get('create', 'Peminjaman::create');
-    $routes->post('store', 'Peminjaman::store');
-    $routes->get('delete/(:num)', 'Peminjaman::delete/$1');
-    $routes->get('detail/(:num)', 'Peminjaman::detail/$1');
-    $routes->get('print', 'Peminjaman::print');
-
-    // Status Flow
-    $routes->get('konfirmasi/(:num)', 'Peminjaman::konfirmasi/$1');
-    $routes->get('bayar/(:num)', 'Peminjaman::bayar/$1');
-    $routes->get('antar/(:num)', 'Peminjaman::antar/$1');
-    $routes->get('selesai/(:num)', 'Peminjaman::selesai/$1');
-    $routes->get('pembayaran/(:num)', 'Peminjaman::pembayaran/$1');
-    $routes->post('prosesBayar/(:num)', 'Peminjaman::prosesBayar/$1');
-    $routes->get('kembalikan/(:num)', 'Peminjaman::kembalikan/$1');
-    $routes->get('perpanjang/(:num)/(:num)', 'Peminjaman::perpanjang/$1/$2');
-    $routes->get('printDetail/(:num)', 'Peminjaman::printDetail/$1');
-});
 
 // --- Modul Lainnya ---
 $routes->group('kategori', function ($routes) {
@@ -160,12 +137,12 @@ $routes->post('/peminjaman/bayar/(:num)', 'Peminjaman::bayar/$1');
 $routes->get('/peminjaman/selesai/(:num)', 'Peminjaman::selesai/$1');
 $routes->get('/peminjaman/kembalikan/(:num)', 'Peminjaman::kembalikan/$1');
 $routes->get('/peminjaman/detail/(:num)', 'Peminjaman::detail/$1');
-
+$routes->get('peminjaman/perpanjang/(:num)', 'Peminjaman::perpanjang/$1');
 
 $routes->group('transaksi', function ($routes) {
 
     // =====================
-    // READ + SEARCH
+    // INDEX
     // =====================
     $routes->get('/', 'Transaksi::index');
 
@@ -176,10 +153,9 @@ $routes->group('transaksi', function ($routes) {
     $routes->post('store', 'Transaksi::store');
 
     // =====================
-    // EDIT
+    // DETAIL
     // =====================
-    $routes->get('edit/(:num)', 'Transaksi::edit/$1');
-    $routes->post('update/(:num)', 'Transaksi::update/$1');
+    $routes->get('detail/(:num)', 'Transaksi::detail/$1');
 
     // =====================
     // DELETE
@@ -187,7 +163,27 @@ $routes->group('transaksi', function ($routes) {
     $routes->get('delete/(:num)', 'Transaksi::delete/$1');
 
     // =====================
-    // BAYAR (UPDATE STATUS)
+    // BAYAR
     // =====================
     $routes->get('bayar/(:num)', 'Transaksi::bayar/$1');
 });
+$routes->get('pengembalian/bayar/(:num)', 'Pengembalian::bayar/$1');
+$routes->post('pengembalian/prosesBayar/(:num)', 'Pengembalian::prosesBayar/$1');
+
+$routes->get('penarikan', 'Penarikan::index');
+$routes->get('penarikan/create', 'Penarikan::create');
+$routes->post('penarikan/store', 'Penarikan::store');
+
+$routes->get('penarikan/edit/(:num)', 'Penarikan::edit/$1');
+$routes->post('penarikan/update/(:num)', 'Penarikan::update/$1');
+
+$routes->get('penarikan/delete/(:num)', 'Penarikan::delete/$1');
+
+
+$routes->get('penarikan/create/(:num)', 'Penarikan::create/$1');
+$routes->post('penarikan/store', 'Penarikan::store');
+$routes->get('penarikan/ajukan/(:num)', 'Penarikan::ajukan/$1');
+$routes->get('penarikan/konfirmasi/(:num)', 'Penarikan::konfirmasi/$1');
+$routes->get('penarikan/diambil/(:num)', 'Penarikan::diambil/$1');
+$routes->get('penarikan/selesai/(:num)', 'Penarikan::selesai/$1');
+$routes->get('penarikan/detail/(:num)', 'Penarikan::detail/$1');

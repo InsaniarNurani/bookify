@@ -31,7 +31,8 @@
                     <input type="password" name="password">
                 </div>
 
-                <input type="hidden" name="role" value="<?= $user['role'] ?>">
+
+
                 <div>
                     <label>Foto</label><br>
                     <input type="file" name="foto"><br>

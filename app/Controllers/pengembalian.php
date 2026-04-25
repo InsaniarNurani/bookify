@@ -83,27 +83,74 @@ class Pengembalian extends BaseController
     // ======================
     public function bayar($id)
     {
+        $builder = $this->pengembalianModel->builder();
+
+        $builder->select('pengembalian.*, users.nama as nama_anggota')
+            ->join('peminjaman', 'peminjaman.id_peminjaman = pengembalian.id_peminjaman')
+            ->join('users', 'users.id = peminjaman.id_anggota')
+            ->where('pengembalian.id_pengembalian', $id);
+
+        $data['pengembalian'] = $builder->get()->getRowArray();
+
+        return view('pengembalian/pembayaran', $data);
+    }
+    public function prosesBayar($id)
+    {
+        $metode = $this->request->getPost('metode');
+        $file = $this->request->getFile('bukti');
+
+        $bukti = null;
+
+        if ($metode == 'transfer') {
+            if ($file && $file->isValid()) {
+                $bukti = $file->getRandomName();
+                $file->move('uploads/bukti', $bukti);
+            } else {
+                return redirect()->back()->with('error', 'Upload bukti wajib!');
+            }
+        }
+
         $this->pengembalianModel->update($id, [
-            'status_bayar' => 'lunas'
+            'status_bayar' => 'lunas',
+            'metode_pembayaran' => $metode,
+            'bukti_pembayaran' => $bukti
         ]);
 
-        return redirect()->back()->with('success', 'Denda dibayar');
+        return redirect()->to('/pengembalian')->with('success', 'Pembayaran berhasil');
     }
-
     // ======================
     // DETAIL
     // ======================
     public function detail($id)
     {
-        $data['pengembalian'] = $this->pengembalianModel
-            ->select('pengembalian.*, peminjaman.tanggal_pinjam')
-            ->join('peminjaman', 'peminjaman.id_peminjaman = pengembalian.id_peminjaman', 'left')
-            ->where('id_pengembalian', $id)
-            ->first();
+        // 🔥 ambil data utama + join
+        $builder = $this->pengembalianModel->builder();
+
+        $builder->select('
+        pengembalian.*,
+        peminjaman.tanggal_pinjam,
+        peminjaman.tanggal_kembali,
+        peminjaman.metode_pengantaran,
+        peminjaman.alamat,
+        users.nama as nama_anggota
+    ')
+            ->join('peminjaman', 'peminjaman.id_peminjaman = pengembalian.id_peminjaman')
+            ->join('users', 'users.id = peminjaman.id_anggota')
+            ->where('pengembalian.id_pengembalian', $id);
+
+        $data['pengembalian'] = $builder->get()->getRowArray();
+
+        // 🔥 ambil detail buku
+        $detailModel = new \App\Models\DetailPeminjamanModel();
+
+        $data['buku'] = $detailModel
+            ->select('detail_peminjaman.*, buku.judul, buku.cover')
+            ->join('buku', 'buku.id_buku = detail_peminjaman.id_buku')
+            ->where('detail_peminjaman.id_peminjaman', $data['pengembalian']['id_peminjaman'])
+            ->findAll();
 
         return view('pengembalian/detail', $data);
     }
-
     // ======================
     // UPDATE (TANPA DENDA MANUAL)
     // ======================

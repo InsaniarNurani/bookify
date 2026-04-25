@@ -20,19 +20,46 @@ class Transaksi extends BaseController
     {
         $keyword = $this->request->getGet('keyword');
 
+        $builder = $this->transaksiModel->builder();
+
+        $builder->select('
+            transaksi.*,
+            peminjaman.metode_pengantaran,
+            peminjaman.ongkir,
+            users.nama as nama_anggota
+        ')
+            ->join('peminjaman', 'peminjaman.id_peminjaman = transaksi.id_peminjaman')
+            ->join('users', 'users.id = peminjaman.id_anggota');
+        // kalau di peminjaman namanya user_id, ganti sesuai field kamu
+
         if ($keyword) {
-            $data['transaksi'] = $this->transaksiModel
-                ->like('jenis', $keyword)
-                ->orLike('status', $keyword)
-                ->orLike('id_peminjaman', $keyword)
-                ->findAll();
-        } else {
-            $data['transaksi'] = $this->transaksiModel->findAll();
+            $builder->groupStart()
+                ->like('transaksi.status', $keyword)
+                ->orLike('users.nama', $keyword)
+                ->groupEnd();
         }
+
+        $data['transaksi'] = $builder->get()->getResultArray();
 
         return view('transaksi/index', $data);
     }
+    public function detail($id)
+    {
+        $builder = $this->transaksiModel->builder();
 
+        $builder->select('
+        transaksi.*,
+        peminjaman.metode_pengantaran,
+        users.nama as nama_anggota
+    ')
+            ->join('peminjaman', 'peminjaman.id_peminjaman = transaksi.id_peminjaman')
+            ->join('users', 'users.id = peminjaman.id_anggota') // sesuaikan field kamu
+            ->where('transaksi.id_transaksi', $id);
+
+        $data['transaksi'] = $builder->get()->getRowArray();
+
+        return view('transaksi/detail', $data);
+    }
     // =====================
     // CREATE FORM
     // =====================

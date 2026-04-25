@@ -30,48 +30,38 @@
             <!-- 💰 DENDA -->
             <td><?= $p['denda'] ?? 0 ?></td>
 
-            <!-- 🔥 STATUS TELAT / TEPAT WAKTU -->
+            <!-- 🔥 STATUS -->
             <td>
                 <?php if (($p['denda'] ?? 0) > 0): ?>
-                    <span style="color:red; font-weight:bold;">
-                        Terlambat
-                    </span>
+                    <span style="color:red; font-weight:bold;">Terlambat</span>
                 <?php else: ?>
-                    <span style="color:green; font-weight:bold;">
-                        Tepat Waktu
-                    </span>
+                    <span style="color:green; font-weight:bold;">Tepat Waktu</span>
                 <?php endif; ?>
             </td>
 
             <!-- 💳 STATUS BAYAR -->
             <td>
-                <?php if (($p['status_bayar'] ?? 'belum_bayar') == 'belum_bayar'): ?>
-                    <span style="color:red;">Belum Bayar</span>
+                <?php if (($p['denda'] ?? 0) == 0): ?>
+                    -
                 <?php else: ?>
-                    <span style="color:green;">Lunas</span>
+                    <?php if (($p['status_bayar'] ?? 'belum_bayar') == 'lunas'): ?>
+                        <span style="color:green;">Lunas</span>
+                    <?php else: ?>
+                        <span style="color:red;">Belum Bayar</span>
+                    <?php endif; ?>
                 <?php endif; ?>
             </td>
 
             <!-- 🔘 AKSI -->
             <td>
 
-                <!-- DETAIL -->
-                <a href="<?= base_url('pengembalian/detail/' . $p['id_pengembalian']) ?>">
-                    Detail
-                </a>
-
-                <!-- EDIT -->
-                <a href="<?= base_url('pengembalian/edit/' . $p['id_pengembalian']) ?>">
-                    Edit
-                </a>
-
-                <!-- HAPUS -->
+                <a href="<?= base_url('pengembalian/detail/' . $p['id_pengembalian']) ?>">Detail</a>
+                <a href="<?= base_url('pengembalian/edit/' . $p['id_pengembalian']) ?>">Edit</a>
                 <a href="<?= base_url('pengembalian/delete/' . $p['id_pengembalian']) ?>"
                     onclick="return confirm('Hapus data?')">
                     Hapus
                 </a>
 
-                <!-- 💳 BAYAR DENDA (HANYA JIKA ADA DENDA & BELUM BAYAR) -->
                 <?php if (($p['denda'] ?? 0) > 0 && ($p['status_bayar'] ?? 'belum_bayar') == 'belum_bayar'): ?>
                     <br>
                     <a href="<?= base_url('pengembalian/bayar/' . $p['id_pengembalian']) ?>"

@@ -20,15 +20,17 @@
        <a href="<?= base_url('buku') ?>">Data Buku</a>
        </a><br>
    <?php endif; ?>
-   <?php if (session()->get('role') == 'admin' || session()->get('role') == 'petugas') : ?>
+   <?php if (session()->get('role') == 'admin') : ?>
        <a href="<?= base_url('/penulis') ?>">
            Penulis
        </a><br>
    <?php endif; ?>
-   <?php if (session()->get('role') == 'admin' || session()->get('role') == 'petugas') : ?>
+
+   <?php if (session()->get('role') == 'admin') : ?>
        <a href="<?= base_url('/penerbit') ?>">
            Penerbit
        </a><br>
+
    <?php endif; ?>
    <a href="<?= base_url('peminjaman') ?>">
        Peminjaman
@@ -40,6 +42,11 @@
    <a href="<?= base_url('transaksi') ?>">
        Transaksi
    </a><br>
+   <li>
+       <a href="<?= base_url('penarikan') ?>">
+           Data Penarikan
+       </a>
+   </li>
    <?php if (session()->get('role') == 'admin') : ?>
        <a href="<?= base_url('rak') ?>">
            Rak
