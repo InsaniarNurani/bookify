@@ -114,16 +114,23 @@
             <td>
                 <?php if (session()->get('role') == 'petugas'): ?>
 
-                    <?php if (
-                        session()->get('role') == 'petugas' &&
-                        $p['status'] == 'dipinjam' &&
-                        ($p['metode_pengantaran'] ?? '') == 'ambil'
-                    ): ?>
-                        <a href="<?= base_url('peminjaman/kembalikan/' . $p['id_peminjaman']) ?>"
-                            onclick="return confirm('Yakin ingin mengembalikan buku ini?')"
-                            style="padding:5px 8px; background:orange; color:white; border-radius:5px; text-decoration:none;">
-                            Kembalikan
-                        </a>
+                    <?php if (session()->get('role') == 'petugas'): ?>
+
+                        <?php if ($p['status'] == 'dipinjam'): ?>
+
+                            <a href="<?= base_url('peminjaman/kembalikan/' . $p['id_peminjaman']) ?>"
+                                onclick="return confirm('Yakin ingin mengembalikan buku ini?')"
+                                style="padding:5px 8px; background:orange; color:white; border-radius:5px; text-decoration:none;">
+                                Kembalikan
+                            </a>
+
+                        <?php endif; ?>
+
+
+
+
+
+
                     <?php endif; ?>
 
                     <?php if ($p['status'] == 'terlambat'): ?>
