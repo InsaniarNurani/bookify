@@ -114,13 +114,18 @@
             <td>
                 <?php if (session()->get('role') == 'petugas'): ?>
 
-                    <?php if ($p['status'] == 'dipinjam'): ?>
+                    <?php if (
+                        session()->get('role') == 'petugas' &&
+                        $p['status'] == 'dipinjam' &&
+                        ($p['metode_pengantaran'] ?? '') == 'ambil'
+                    ): ?>
                         <a href="<?= base_url('peminjaman/kembalikan/' . $p['id_peminjaman']) ?>"
                             onclick="return confirm('Yakin ingin mengembalikan buku ini?')"
                             style="padding:5px 8px; background:orange; color:white; border-radius:5px; text-decoration:none;">
                             Kembalikan
                         </a>
                     <?php endif; ?>
+
                     <?php if ($p['status'] == 'terlambat'): ?>
                         <span style="color:red;">Terlambat</span>
                     <?php elseif ($p['status'] == 'kembali'): ?>
@@ -145,10 +150,16 @@
                 <?php endif; ?>
             </td>
             <td>
-                <a href="<?= base_url('penarikan/ajukan/' . $p['id_peminjaman']) ?>"
-                    onclick="return confirm('Ajukan penarikan?')">
-                    🚚 Ajukan Penarikan
-                </a>
+
+                <?php if (session()->get('role') == 'anggota' && ($p['metode_pengantaran'] ?? '') != 'ambil'): ?>
+
+                    <a href="<?= base_url('penarikan/ajukan/' . $p['id_peminjaman']) ?>"
+                        onclick="return confirm('Ajukan penarikan?')">
+                        🚚 Ajukan Penarikan
+                    </a>
+
+                <?php endif; ?>
+            </td>
             </td>
 
             <td>

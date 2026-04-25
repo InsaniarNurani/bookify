@@ -341,6 +341,8 @@ class Peminjaman extends BaseController
 
         return redirect()->to('/peminjaman')->with('success', 'Berhasil diperpanjang');
     }
+
+
     // ================= UPDATE STATUS =================
     public function updateStatus($id, $status)
     {

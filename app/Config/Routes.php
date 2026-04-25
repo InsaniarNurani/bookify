@@ -20,15 +20,19 @@ $routes->get('logout', 'Auth::logout');
 $routes->get('/', 'Home::index', $authFilter);
 $routes->get('dashboard', 'Home::index', $authFilter);
 
-// --- Modul: Users ---
-$routes->get('/users', 'Users::index', $intRole); // menampilkan data user hanya untuk admin dan petugas
-$routes->get('/users/edit/(:num)', 'Users::edit/$1', $allRole); // form edit user
-$routes->post('/users/update/(:num)', 'Users::update/$1', $allRole); // aksi update user
-$routes->get('/users/delete/(:num)', 'Users::delete/$1', $allRole); // aksi hapus user
-$routes->get('users/detail/(:num)', 'Users::detail/$1', $allRole); // aksi detail user
-$routes->get('users/print', 'Users::print', $allRole); // aksi print data user
-$routes->get('users/wa/(:num)', 'Users::wa/$1', $allRole); // aksi kirim ke whatsapp
-
+// ================== USERS ==================
+$routes->group('users', function ($routes) use ($intRole, $allRole) {
+    $routes->get('/', 'Users::index', $intRole);
+    $routes->get('create', 'Users::create');
+    $routes->post('store', 'Users::store');
+    $routes->get('users/edit/(:num)', 'Users::edit/$1', $allRole);
+    $routes->post('update/(:num)', 'Users::update/$1', $allRole);
+    $routes->get('delete/(:num)', 'Users::delete/$1', $allRole);
+    $routes->get('detail/(:num)', 'Users::detail/$1', $allRole);
+    $routes->get('print', 'Users::print', $allRole);
+    $routes->get('wa/(:num)', 'Users::wa/$1', $allRole);
+});
+//
 
 // --- Modul: Buku ---
 $routes->group('buku', function ($routes) {
@@ -187,3 +191,5 @@ $routes->get('penarikan/konfirmasi/(:num)', 'Penarikan::konfirmasi/$1');
 $routes->get('penarikan/diambil/(:num)', 'Penarikan::diambil/$1');
 $routes->get('penarikan/selesai/(:num)', 'Penarikan::selesai/$1');
 $routes->get('penarikan/detail/(:num)', 'Penarikan::detail/$1');
+$routes->get('penarikan/pembayaran/(:num)', 'Penarikan::pembayaran/$1');
+$routes->post('penarikan/prosesBayar/(:num)', 'Penarikan::prosesBayar/$1');

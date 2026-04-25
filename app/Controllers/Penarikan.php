@@ -13,17 +13,19 @@ class Penarikan extends BaseController
         $this->penarikan = new PenarikanModel();
     }
 
-    // 🔍 READ + SEARCH
     public function index()
     {
         $keyword = $this->request->getGet('keyword');
 
+        $builder = $this->penarikan;
+
         if ($keyword) {
-            $data['penarikan'] = $this->penarikan
-                ->select('penarikan.*, anggota.nama as nama_anggota')
+            $data['penarikan'] = $builder
+                ->select('penarikan.*, users.nama as nama_anggota')
                 ->join('peminjaman', 'peminjaman.id_peminjaman = penarikan.id_peminjaman')
                 ->join('anggota', 'anggota.id_anggota = peminjaman.id_anggota')
-                ->like('anggota.nama', $keyword)
+                ->join('users', 'users.id = anggota.user_id')
+                ->like('users.nama', $keyword)
                 ->orLike('penarikan.status', $keyword)
                 ->findAll();
         } else {
@@ -33,130 +35,73 @@ class Penarikan extends BaseController
         return view('penarikan/index', $data);
     }
 
-    // ➕ CREATE FORM
     public function create($id_peminjaman = null)
     {
-        $data['id_peminjaman'] = $id_peminjaman;
-        return view('penarikan/create', $data);
+        return view('penarikan/create', [
+            'id_peminjaman' => $id_peminjaman
+        ]);
     }
-    public function detail($id)
-    {
-        $data['penarikan'] = $this->penarikan->getDetail($id);
-        return view('penarikan/detail', $data);
-    }
-    // 💾 INSERT DATA
+
     public function store()
     {
         $this->penarikan->insert([
             'id_peminjaman' => $this->request->getPost('id_peminjaman'),
             'alamat'        => $this->request->getPost('alamat'),
-            'biaya'         => $this->request->getPost('biaya'),
-            'status'        => 'menunggu',
-            'tanggal_ambil' => $this->request->getPost('tanggal_ambil'),
-            'petugas_id'    => $this->request->getPost('petugas_id'),
-        ]);
-
-        return redirect()->to('/penarikan');
-    }
-
-    // ✏️ EDIT FORM
-    public function edit($id)
-    {
-        $data['penarikan'] = $this->penarikan->find($id);
-        return view('penarikan/edit', $data);
-    }
-
-    // 🔄 UPDATE DATA
-    public function update($id)
-    {
-        $this->penarikan->update($id, [
-            'id_peminjaman' => $this->request->getPost('id_peminjaman'),
-            'alamat'        => $this->request->getPost('alamat'),
-            'biaya'         => $this->request->getPost('biaya'),
-            'status'        => $this->request->getPost('status'),
-            'tanggal_ambil' => $this->request->getPost('tanggal_ambil'),
-            'petugas_id'    => $this->request->getPost('petugas_id'),
-        ]);
-
-        return redirect()->to('/penarikan');
-    }
-    public function ajukan($id_peminjaman)
-    {
-        $db = \Config\Database::connect();
-
-        // ambil data peminjaman + anggota
-        $dataPinjam = $db->table('peminjaman')
-            ->select('peminjaman.*, anggota.alamat as alamat_anggota')
-            ->join('anggota', 'anggota.id_anggota = peminjaman.id_anggota')
-            ->where('id_peminjaman', $id_peminjaman)
-            ->get()
-            ->getRowArray();
-
-        $cek = $this->penarikan->where('id_peminjaman', $id_peminjaman)->first();
-
-        if ($cek) {
-            return redirect()->back()->with('error', 'Sudah diajukan');
-        }
-
-        $this->penarikan->insert([
-            'id_peminjaman' => $id_peminjaman,
-            'alamat'        => $dataPinjam['alamat_anggota'], // 🔥 otomatis
             'biaya'         => 10000,
             'status'        => 'menunggu'
         ]);
 
         return redirect()->to('/penarikan');
     }
-    public function konfirmasi($id)
+
+    public function detail($id)
     {
-        if (session()->get('role') != 'petugas') {
-            return redirect()->to('/');
+        return view('penarikan/detail', [
+            'penarikan' => $this->penarikan->getDetail($id)
+        ]);
+    }
+
+    public function edit($id)
+    {
+        return view('penarikan/edit', [
+            'penarikan' => $this->penarikan->find($id)
+        ]);
+    }
+
+    // ✅ FIXED INI
+    public function pembayaran($id = null)
+    {
+        $data['penarikan'] = $this->penarikan->find($id);
+
+        if (!$data['penarikan']) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('Data tidak ditemukan');
         }
 
+        return view('penarikan/pembayaran', $data);
+    }
+    public function prosesBayar($id)
+    {
         $this->penarikan->update($id, [
-            'status' => 'diproses',
-            'petugas_id' => session()->get('id')
+            'status' => 'diproses'
         ]);
 
         return redirect()->to('/penarikan');
     }
-    public function diambil($id)
+    public function update($id)
     {
-        if (session()->get('role') != 'petugas') {
-            return redirect()->to('/');
-        }
-
         $this->penarikan->update($id, [
-            'status' => 'diambil',
-            'tanggal_ambil' => date('Y-m-d')
+            'alamat'        => $this->request->getPost('alamat'),
+            'biaya'         => $this->request->getPost('biaya'),
+            'status'        => $this->request->getPost('status'),
+            'tanggal_ambil' => $this->request->getPost('tanggal_ambil'),
         ]);
 
         return redirect()->to('/penarikan');
     }
 
-    public function selesai($id)
-    {
-        if (session()->get('role') != 'petugas') {
-            return redirect()->to('/');
-        }
-
-        $this->penarikan->update($id, [
-            'status' => 'selesai'
-        ]);
-
-        return redirect()->to('/penarikan');
-    }
-    // ❌ DELETE
     public function delete($id)
     {
-        if (!$id) {
-            return redirect()->to('/penarikan');
-        }
-
-        $this->penarikan
-            ->where('id_penarikan', $id)
-            ->delete();
-
+        $this->penarikan->delete($id);
         return redirect()->to('/penarikan');
     }
 }

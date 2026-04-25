@@ -39,18 +39,11 @@
             <td><?= $b['jumlah'] ?></td>
             <td><?= $b['tersedia'] ?></td>
             <td>
-                <?php if ($b['cover']): ?>
-
-                    <?php $ext = pathinfo($b['cover'], PATHINFO_EXTENSION); ?>
-
-                    <?php if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif'])): ?>
-                        <img src="<?= base_url('uploads/buku/' . $b['cover']) ?>" width="60">
-                    <?php else: ?>
-                        <a href="<?= base_url('uploads/buku/' . $b['cover']) ?>" target="_blank">File</a>
-                    <?php endif; ?>
-
+                <?php if (!empty($b['cover'])): ?>
+                    <img src="<?= base_url('uploads/buku/' . esc($b['cover'])) ?>" width="60"
+                        onerror="this.src='<?= base_url('assets/no-image.png') ?>'">
                 <?php else: ?>
-                    -
+                    <img src="<?= base_url('assets/no-image.png') ?>" width="60">
                 <?php endif; ?>
             </td>
             <td>

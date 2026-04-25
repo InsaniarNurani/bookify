@@ -78,7 +78,7 @@
     Deskripsi:<br>
     <textarea name="deskripsi"></textarea><br><br>
 
-    Cover / file :<br>
+    Cover :<br>
     <input type="file" name="cover"><br><br>
 
     <button type="submit">Simpan</button>
