@@ -1,69 +1,101 @@
 <?= $this->extend('layouts/main') ?>
 <?= $this->section('content') ?>
 
-<div id="printArea">
+<div class="container py-4">
 
-    <h3>Detail Penarikan</h3>
+    <div id="printArea">
 
-    <!-- ID PENARIKAN -->
-    <p><b>ID Penarikan:</b> <?= $penarikan['id_penarikan'] ?? '-' ?></p>
+        <!-- HEADER -->
+        <div class="mb-4">
+            <h3 class="fw-bold">
+                <i class="bi bi-truck me-2"></i>Detail Penarikan
+            </h3>
+        </div>
 
-    <!-- ID / NAMA PEMINJAMAN (kalau sudah join nama) -->
-    <p><b>Peminjam:</b> <?= $penarikan['nama_anggota'] ?? $penarikan['id_peminjaman'] ?? '-' ?></p>
+        <!-- CARD -->
+        <div class="card shadow-sm">
+            <div class="card-body">
 
-    <!-- ALAMAT -->
-    <p><b>Alamat Pengambilan:</b> <?= $penarikan['alamat'] ?? '-' ?></p>
+                <div class="row">
 
-    <!-- BIAYA -->
-    <p><b>Biaya:</b>
-        Rp <?= number_format($penarikan['biaya'] ?? 0, 0, ',', '.') ?>
-    </p>
+                    <div class="col-md-6 mb-3">
+                        <strong>ID Penarikan</strong><br>
+                        <?= $penarikan['id_penarikan'] ?? '-' ?>
+                    </div>
 
-    <!-- STATUS -->
-    <p><b>Status:</b>
-        <?php if (($penarikan['status'] ?? '') == 'diajukan'): ?>
-            <span style="color:orange;">Diajukan</span>
+                    <div class="col-md-6 mb-3">
+                        <strong>Peminjam</strong><br>
+                        <?= $penarikan['nama_anggota'] ?? $penarikan['id_peminjaman'] ?? '-' ?>
+                    </div>
 
-        <?php elseif (($penarikan['status'] ?? '') == 'menunggu_pembayaran'): ?>
-            <span style="color:red;">Menunggu Pembayaran</span>
+                    <div class="col-md-12 mb-3">
+                        <strong>Alamat Pengambilan</strong><br>
+                        <?= $penarikan['alamat'] ?? '-' ?>
+                    </div>
 
-        <?php elseif (($penarikan['status'] ?? '') == 'sudah_bayar'): ?>
-            <span style="color:blue;">Sudah Bayar</span>
+                    <div class="col-md-6 mb-3">
+                        <strong>Biaya</strong><br>
+                        <span class="text-danger fw-bold">
+                            Rp <?= number_format($penarikan['biaya'] ?? 0, 0, ',', '.') ?>
+                        </span>
+                    </div>
 
-        <?php elseif (($penarikan['status'] ?? '') == 'diambil'): ?>
-            <span style="color:green;">Diambil</span>
+                    <div class="col-md-6 mb-3">
+                        <strong>Status</strong><br>
 
-        <?php elseif (($penarikan['status'] ?? '') == 'selesai'): ?>
-            <span style="color:gray;">Selesai</span>
+                        <?php if (($penarikan['status'] ?? '') == 'diajukan'): ?>
+                            <span class="badge bg-warning text-dark">Diajukan</span>
 
-        <?php else: ?>
-            <span>-</span>
-        <?php endif; ?>
-    </p>
+                        <?php elseif (($penarikan['status'] ?? '') == 'menunggu_pembayaran'): ?>
+                            <span class="badge bg-danger">Menunggu Pembayaran</span>
 
-    <!-- TANGGAL -->
-    <p><b>Tanggal Ambil:</b> <?= $penarikan['tanggal_ambil'] ?? '-' ?></p>
+                        <?php elseif (($penarikan['status'] ?? '') == 'sudah_bayar'): ?>
+                            <span class="badge bg-primary">Sudah Bayar</span>
 
-    <!-- WAKTU -->
-    <p><b>Dibuat:</b> <?= $penarikan['created_at'] ?? '-' ?></p>
-    <p><b>Update:</b> <?= $penarikan['updated_at'] ?? '-' ?></p>
+                        <?php elseif (($penarikan['status'] ?? '') == 'diambil'): ?>
+                            <span class="badge bg-success">Diambil</span>
 
-</div>
+                        <?php elseif (($penarikan['status'] ?? '') == 'selesai'): ?>
+                            <span class="badge bg-secondary">Selesai</span>
 
-<br>
+                        <?php else: ?>
+                            <span class="badge bg-light text-dark">-</span>
+                        <?php endif; ?>
 
-<!-- BUTTON -->
-<div class="no-print">
+                    </div>
 
-    <a href="<?= base_url('penarikan') ?>"
-        style="padding:8px 12px;background:#ccc;text-decoration:none;border-radius:5px;">
-        ⬅ Kembali
-    </a>
+                    <div class="col-md-6 mb-3">
+                        <strong>Tanggal Ambil</strong><br>
+                        <?= $penarikan['tanggal_ambil'] ?? '-' ?>
+                    </div>
 
-    <button onclick="window.print()"
-        style="padding:8px 12px;background:green;color:white;border:none;border-radius:5px;">
-        🖨 Print
-    </button>
+                    <div class="col-md-6 mb-3">
+                        <strong>Dibuat</strong><br>
+                        <small><?= $penarikan['created_at'] ?? '-' ?></small>
+                    </div>
+
+                    <div class="col-md-6">
+                        <strong>Terakhir Update</strong><br>
+                        <small><?= $penarikan['updated_at'] ?? '-' ?></small>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- BUTTON -->
+    <div class="mt-4 no-print">
+        <a href="<?= base_url('penarikan') ?>" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali
+        </a>
+
+        <button onclick="window.print()" class="btn btn-success">
+            <i class="bi bi-printer"></i> Print
+        </button>
+    </div>
 
 </div>
 

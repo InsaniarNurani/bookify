@@ -1,172 +1,201 @@
 <?= $this->extend('layouts/main') ?>
 <?= $this->section('content') ?>
 
-<h3>Data Peminjaman</h3>
+<div class="container py-4">
 
-<?php if (session()->get('role') == 'anggota'): ?>
-    <a href="<?= base_url('peminjaman/create') ?>">+ Tambah</a>
-<?php endif; ?>
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold">
+            <i class="bi bi-journal-text me-2"></i>Data Peminjaman
+        </h3>
 
-<table border="1" cellpadding="5">
-    <tr>
-        <th>ID</th>
-        <th>Nama Anggota</th>
-        <th>Buku</th>
-        <th>Tgl Pinjam</th>
-        <th>Tgl Kembali</th>
-        <th>Status</th>
-        <th>pengantaran</th>
-        <th>Aksi</th>
+        <?php if (session()->get('role') == 'anggota'): ?>
+            <a href="<?= base_url('peminjaman/create') ?>" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Tambah
+            </a>
+        <?php endif; ?>
+    </div>
 
-    </tr>
+    <!-- CARD -->
+    <div class="card shadow-sm">
+        <div class="card-body">
 
-    <?php foreach ($peminjaman as $p): ?>
-        <tr>
-            <td><?= $p['id_peminjaman'] ?></td>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover align-middle">
 
-            <!-- ✅ NAMA ANGGOTA -->
-            <td><?= $p['nama_anggota'] ?></td>
+                    <thead class="table-light text-center">
+                        <tr>
+                            <th>ID</th>
+                            <th>Anggota</th>
+                            <th>Buku</th>
+                            <th>Tanggal</th>
+                            <th>Status</th>
+                            <th>Pengantaran</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
 
-            <!-- ✅ DAFTAR BUKU -->
-            <td>
-                <?php foreach ($p['buku'] as $b): ?>
-                    <div style="margin-bottom:5px;">
-                        <img src="<?= base_url('uploads/buku/' . $b['cover']) ?>" width="40">
-                        <?= $b['judul'] ?>
-                    </div>
-                <?php endforeach; ?>
-            </td>
+                    <tbody>
 
-            <td><?= $p['tanggal_pinjam'] ?></td>
-            <td><?= $p['tanggal_kembali'] ?></td>
+                        <?php foreach ($peminjaman as $p): ?>
+                            <tr>
 
-            <td>
-                <?php if ($p['status'] == 'dipinjam'): ?>
-                    Dipinjam
-                <?php elseif ($p['status'] == 'menunggu_bayar'): ?>
-                    <a href="#">Menunggu Bayar</a>
-                <?php else: ?>
-                    <?= $p['status'] ?>
-                <?php endif; ?>
-            </td>
-            <td>
+                                <td class="text-center"><?= $p['id_peminjaman'] ?></td>
 
-                <?php if (($p['metode_pengantaran'] ?? '') == 'ambil'): ?>
-                    <span style="color:purple;">Ambil di Perpustakaan</span>
+                                <td><?= $p['nama_anggota'] ?></td>
 
-                <?php else: ?>
+                                <!-- BUKU -->
+                                <td>
+                                    <?php foreach ($p['buku'] as $b): ?>
+                                        <div class="d-flex align-items-center mb-1">
+                                            <img src="<?= base_url('uploads/buku/' . $b['cover']) ?>"
+                                                class="me-2 rounded"
+                                                style="width:40px;height:55px;object-fit:cover;">
+                                            <small><?= $b['judul'] ?></small>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </td>
 
-                    <!-- 1. MENUNGGU KONFIRMASI -->
-                    <?php if ($p['status_pengiriman'] == 'menunggu_konfirmasi'): ?>
-                        <span style="color:orange;">Menunggu Konfirmasi</span>
+                                <!-- TANGGAL -->
+                                <td>
+                                    <small>
+                                        <b>Pinjam:</b><br><?= $p['tanggal_pinjam'] ?><br>
+                                        <b>Kembali:</b><br><?= $p['tanggal_kembali'] ?>
+                                    </small>
+                                </td>
 
-                        <?php if (session()->get('role') == 'petugas'): ?>
-                            <br>
-                            <a href="<?= base_url('peminjaman/konfirmasi/' . $p['id_peminjaman']) ?>"
-                                style="background:orange;color:white;padding:5px;border-radius:5px;">
-                                ✔ Konfirmasi
-                            </a>
-                        <?php endif; ?>
+                                <!-- STATUS -->
+                                <td class="text-center">
+                                    <?php if ($p['status'] == 'dipinjam'): ?>
+                                        <span class="badge bg-primary">Dipinjam</span>
+                                    <?php elseif ($p['status'] == 'menunggu_bayar'): ?>
+                                        <span class="badge bg-warning text-dark">Menunggu Bayar</span>
+                                    <?php elseif ($p['status'] == 'kembali'): ?>
+                                        <span class="badge bg-success">Kembali</span>
+                                    <?php elseif ($p['status'] == 'terlambat'): ?>
+                                        <span class="badge bg-danger">Terlambat</span>
+                                    <?php else: ?>
+                                        <span class="badge bg-secondary"><?= $p['status'] ?></span>
+                                    <?php endif; ?>
+                                </td>
 
+                                <!-- PENGANTARAN -->
+                                <td>
+                                    <?php if (($p['metode_pengantaran'] ?? '') == 'ambil'): ?>
 
-                        <!-- 2. MENUNGGU PEMBAYARAN -->
-                    <?php elseif ($p['status_pengiriman'] == 'menunggu_pembayaran'): ?>
+                                        <span class="badge bg-info text-dark">
+                                            <i class="bi bi-shop"></i> Ambil
+                                        </span>
 
-                        <?php if (session()->get('role') == 'anggota'): ?>
-                            <a href="<?= base_url('peminjaman/pembayaran/' . $p['id_peminjaman']) ?>"
-                                style="background:blue;color:white;padding:5px;border-radius:5px;">
-                                💳 Bayar Ongkir
-                            </a>
-                        <?php else: ?>
-                            <span style="color:blue;">Menunggu Pembayaran</span>
-                        <?php endif; ?>
+                                    <?php else: ?>
 
+                                        <?php if ($p['status_pengiriman'] == 'menunggu_konfirmasi'): ?>
+                                            <span class="badge bg-warning text-dark">Menunggu Konfirmasi</span>
 
-                        <!-- 3. DIANTAR -->
-                    <?php elseif ($p['status_pengiriman'] == 'diantar'): ?>
-                        <span style="color:green;">🚚 Sedang Diantar</span>
+                                            <?php if (session()->get('role') == 'petugas'): ?>
+                                                <br>
+                                                <a href="<?= base_url('peminjaman/konfirmasi/' . $p['id_peminjaman']) ?>"
+                                                    class="btn btn-sm btn-warning mt-1">
+                                                    ✔ Konfirmasi
+                                                </a>
+                                            <?php endif; ?>
 
-                        <?php if (session()->get('role') == 'petugas'): ?>
-                            <br>
-                            <a href="<?= base_url('peminjaman/selesai/' . $p['id_peminjaman']) ?>"
-                                style="background:green;color:white;padding:5px;border-radius:5px;">
-                                ✔ Selesai
-                            </a>
-                        <?php endif; ?>
+                                        <?php elseif ($p['status_pengiriman'] == 'menunggu_pembayaran'): ?>
 
+                                            <?php if (session()->get('role') == 'anggota'): ?>
+                                                <a href="<?= base_url('peminjaman/pembayaran/' . $p['id_peminjaman']) ?>"
+                                                    class="btn btn-sm btn-primary">
+                                                    💳 Bayar
+                                                </a>
+                                            <?php else: ?>
+                                                <span class="badge bg-primary">Menunggu Pembayaran</span>
+                                            <?php endif; ?>
 
-                        <!-- 4. SELESAI -->
-                    <?php elseif ($p['status_pengiriman'] == 'selesai'): ?>
-                        <span style="color:gray;">✔ Selesai</span>
+                                        <?php elseif ($p['status_pengiriman'] == 'diantar'): ?>
+                                            <span class="badge bg-success">🚚 Diantar</span>
 
-                    <?php else: ?>
-                        -
-                    <?php endif; ?>
+                                            <?php if (session()->get('role') == 'petugas'): ?>
+                                                <br>
+                                                <a href="<?= base_url('peminjaman/selesai/' . $p['id_peminjaman']) ?>"
+                                                    class="btn btn-sm btn-success mt-1">
+                                                    ✔ Selesai
+                                                </a>
+                                            <?php endif; ?>
 
-                <?php endif; ?>
+                                        <?php elseif ($p['status_pengiriman'] == 'selesai'): ?>
+                                            <span class="badge bg-secondary">✔ Selesai</span>
+                                        <?php endif; ?>
 
-            </td>
-            <td>
-                <a href="<?= base_url('peminjaman/detail/' . $p['id_peminjaman']) ?>">
-                    Detail
-                </a>
-            </td>
-            <td>
-                <?php if (session()->get('role') == 'petugas'): ?>
+                                    <?php endif; ?>
+                                </td>
 
-                    <?php if (session()->get('role') == 'petugas'): ?>
+                                <!-- AKSI -->
+                                <td>
 
-                        <?php if ($p['status'] == 'dipinjam'): ?>
+                                    <div class="d-flex flex-wrap gap-1">
 
-                            <a href="<?= base_url('peminjaman/kembalikan/' . $p['id_peminjaman']) ?>"
-                                onclick="return confirm('Yakin ingin mengembalikan buku ini?')"
-                                style="padding:5px 8px; background:orange; color:white; border-radius:5px; text-decoration:none;">
-                                Kembalikan
-                            </a>
+                                        <!-- DETAIL -->
+                                        <a href="<?= base_url('peminjaman/detail/' . $p['id_peminjaman']) ?>"
+                                            class="btn btn-sm btn-info">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
 
-                        <?php endif; ?>
+                                        <!-- PETUGAS -->
+                                        <?php if (session()->get('role') == 'petugas'): ?>
 
-                    <?php endif; ?>
+                                            <?php if ($p['status'] == 'dipinjam'): ?>
+                                                <a href="<?= base_url('peminjaman/kembalikan/' . $p['id_peminjaman']) ?>"
+                                                    onclick="return confirm('Yakin?')"
+                                                    class="btn btn-sm btn-warning">
+                                                    <i class="bi bi-arrow-return-left"></i>
+                                                </a>
+                                            <?php endif; ?>
 
-                    <?php if ($p['status'] == 'terlambat'): ?>
-                        <span style="color:red;">Terlambat</span>
-                    <?php elseif ($p['status'] == 'kembali'): ?>
-                        <span style="color:green;">Kembali</span>
-                    <?php endif; ?>
+                                        <?php endif; ?>
 
-                <?php endif; ?>
+                                        <!-- ANGGOTA -->
+                                        <?php if (session()->get('role') == 'anggota'): ?>
 
-            </td>
-            <td>
-                <?php if (session()->get('role') == 'anggota'): ?>
+                                            <?php if ($p['status'] == 'dipinjam'): ?>
+                                                <a href="<?= base_url('peminjaman/perpanjang/' . $p['id_peminjaman']) ?>"
+                                                    onclick="return confirm('Perpanjang 7 hari?')"
+                                                    class="btn btn-sm btn-primary">
+                                                    🔁
+                                                </a>
+                                            <?php endif; ?>
 
-                    <?php if ($p['status'] == 'dipinjam'): ?>
-                        <br>
-                        <a href="<?= base_url('peminjaman/perpanjang/' . $p['id_peminjaman']) ?>"
-                            onclick="return confirm('Perpanjang 7 hari?')"
-                            style="padding:5px 8px; background:blue; color:white; border-radius:5px; text-decoration:none;">
-                            🔁 Perpanjang
-                        </a>
-                    <?php endif; ?>
+                                            <?php if (($p['metode_pengantaran'] ?? '') != 'ambil'): ?>
+                                                <a href="<?= base_url('peminjaman/ajukan/' . $p['id_peminjaman']) ?>"
+                                                    onclick="return confirm('Ajukan penarikan?')"
+                                                    class="btn btn-sm btn-secondary">
+                                                    🚚
+                                                </a>
+                                            <?php endif; ?>
 
-                <?php endif; ?>
-            </td>
-            <td>
+                                        <?php endif; ?>
 
-                <?php if (session()->get('role') == 'anggota' && ($p['metode_pengantaran'] ?? '') != 'ambil'): ?>
-                    <a href="<?= base_url('peminjaman/ajukan/' . $p['id_peminjaman']) ?>"
-                        onclick="return confirm('Ajukan penarikan?')">
-                        🚚 Ajukan Penarikan
-                    </a>
-                <?php endif; ?>
-            </td>
-            </td>
+                                        <!-- HAPUS -->
+                                        <a href="<?= base_url('peminjaman/delete/' . $p['id_peminjaman']) ?>"
+                                            onclick="return confirm('Hapus data ini?')"
+                                            class="btn btn-sm btn-danger">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
 
-            <td>
-                <a href="<?= base_url('peminjaman/delete/' . $p['id_peminjaman']) ?>">Hapus</a>
-            </td>
-        </tr>
-    <?php endforeach; ?>
-</table>
+                                    </div>
+
+                                </td>
+
+                            </tr>
+                        <?php endforeach; ?>
+
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</div>
 
 <?= $this->endSection() ?>

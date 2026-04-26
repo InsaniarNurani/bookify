@@ -1,95 +1,155 @@
 <?= $this->extend('layouts/main') ?>
 <?= $this->section('content') ?>
 
-<h2>Data Penarikan</h2>
+<div class="container py-4">
 
-<table border="1" cellpadding="10">
-    <tr>
-        <th>ID</th>
-        <th>Nama Anggota</th>
-        <th>Alamat</th>
-        <th>Biaya</th>
-        <th>Status</th>
-        <th>Tanggal Ambil</th>
-        <th>Aksi</th>
-    </tr>
+    <!-- HEADER -->
+    <div class="mb-3">
+        <h3 class="fw-bold">
+            <i class="bi bi-truck me-2"></i>Data Penarikan
+        </h3>
+    </div>
 
-    <?php foreach ($penarikan as $p): ?>
-        <tr>
-            <td><?= $p['id_penarikan'] ?></td>
-            <td><?= $p['nama_anggota'] ?></td>
-            <td><?= $p['alamat'] ?></td>
-            <td><?= $p['biaya'] ?></td>
-            <td><?= $p['status'] ?></td>
-            <td><?= $p['tanggal_ambil'] ?></td>
+    <!-- CARD -->
+    <div class="card shadow-sm">
+        <div class="card-body">
 
-            <td>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover align-middle">
 
-                <!-- ================= DIAJUKAN ================= -->
-                <?php if ($p['status'] == 'diajukan'): ?>
+                    <thead class="table-light text-center">
+                        <tr>
+                            <th>ID</th>
+                            <th>Anggota</th>
+                            <th>Alamat</th>
+                            <th>Biaya</th>
+                            <th>Status</th>
+                            <th>Tanggal Ambil</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
 
-                    <?php if (session()->get('role') == 'petugas'): ?>
-                        <a href="<?= base_url('penarikan/konfirmasi/' . $p['id_penarikan']) ?>">
-                            ✔ Konfirmasi
-                        </a>
-                    <?php else: ?>
-                        Menunggu Konfirmasi
-                    <?php endif; ?>
+                    <tbody>
 
+                        <?php foreach ($penarikan as $p): ?>
+                            <tr>
 
-                    <!-- ================= MENUNGGU PEMBAYARAN ================= -->
-                <?php elseif ($p['status'] == 'menunggu_pembayaran'): ?>
+                                <td class="text-center"><?= $p['id_penarikan'] ?></td>
 
-                    <?php if (session()->get('role') == 'anggota'): ?>
-                        <a href="<?= base_url('penarikan/bayar/' . $p['id_penarikan']) ?>">
-                            💳 Bayar
-                        </a>
-                    <?php else: ?>
-                        Menunggu Pembayaran
-                    <?php endif; ?>
+                                <td><?= $p['nama_anggota'] ?></td>
 
+                                <td>
+                                    <small><?= $p['alamat'] ?></small>
+                                </td>
 
-                    <!-- ================= SUDAH BAYAR ================= -->
-                <?php elseif ($p['status'] == 'sudah_bayar'): ?>
+                                <td>
+                                    <span class="fw-bold text-danger">
+                                        Rp <?= number_format($p['biaya'], 0, ',', '.') ?>
+                                    </span>
+                                </td>
 
-                    <?php if (session()->get('role') == 'petugas'): ?>
-                        <a href="<?= base_url('penarikan/ambil/' . $p['id_penarikan']) ?>">
-                            🚚 Ambil
-                        </a>
-                    <?php else: ?>
-                        Sudah Dibayar
-                    <?php endif; ?>
+                                <!-- STATUS -->
+                                <td class="text-center">
+                                    <?php if ($p['status'] == 'diajukan'): ?>
+                                        <span class="badge bg-warning text-dark">Diajukan</span>
 
+                                    <?php elseif ($p['status'] == 'menunggu_pembayaran'): ?>
+                                        <span class="badge bg-danger">Menunggu Bayar</span>
 
-                    <!-- ================= DIAMBIL ================= -->
-                <?php elseif ($p['status'] == 'diambil'): ?>
+                                    <?php elseif ($p['status'] == 'sudah_bayar'): ?>
+                                        <span class="badge bg-primary">Sudah Bayar</span>
 
-                    <?php if (session()->get('role') == 'petugas'): ?>
-                        <a href="<?= base_url('penarikan/selesai/' . $p['id_penarikan']) ?>">
-                            ✔ Selesai
-                        </a>
-                    <?php else: ?>
-                        Dalam Proses Pengambilan
-                    <?php endif; ?>
+                                    <?php elseif ($p['status'] == 'diambil'): ?>
+                                        <span class="badge bg-success">Diambil</span>
 
+                                    <?php elseif ($p['status'] == 'selesai'): ?>
+                                        <span class="badge bg-secondary">Selesai</span>
+                                    <?php endif; ?>
+                                </td>
 
-                    <!-- ================= SELESAI ================= -->
-                <?php elseif ($p['status'] == 'selesai'): ?>
-                    ✔ Selesai
-                <?php endif; ?>
+                                <td class="text-center">
+                                    <?= $p['tanggal_ambil'] ?>
+                                </td>
 
-                |<a href="<?= base_url('penarikan/detail/' . $p['id_penarikan']) ?>">
-                    Detail
-                </a>
-                <a href="<?= base_url('penarikan/delete/' . $p['id_penarikan']) ?>"
-                    onclick="return confirm('Hapus data?')">
-                    Hapus
-                </a>
+                                <!-- AKSI -->
+                                <td>
+                                    <div class="d-flex flex-wrap gap-1">
 
-            </td>
-        </tr>
-    <?php endforeach; ?>
+                                        <!-- DIAJUKAN -->
+                                        <?php if ($p['status'] == 'diajukan'): ?>
 
-</table>
+                                            <?php if (session()->get('role') == 'petugas'): ?>
+                                                <a href="<?= base_url('penarikan/konfirmasi/' . $p['id_penarikan']) ?>"
+                                                    class="btn btn-sm btn-warning">
+                                                    ✔
+                                                </a>
+                                            <?php endif; ?>
+
+                                        <?php endif; ?>
+
+                                        <!-- MENUNGGU BAYAR -->
+                                        <?php if ($p['status'] == 'menunggu_pembayaran'): ?>
+
+                                            <?php if (session()->get('role') == 'anggota'): ?>
+                                                <a href="<?= base_url('penarikan/bayar/' . $p['id_penarikan']) ?>"
+                                                    class="btn btn-sm btn-primary">
+                                                    💳
+                                                </a>
+                                            <?php endif; ?>
+
+                                        <?php endif; ?>
+
+                                        <!-- SUDAH BAYAR -->
+                                        <?php if ($p['status'] == 'sudah_bayar'): ?>
+
+                                            <?php if (session()->get('role') == 'petugas'): ?>
+                                                <a href="<?= base_url('penarikan/ambil/' . $p['id_penarikan']) ?>"
+                                                    class="btn btn-sm btn-success">
+                                                    🚚
+                                                </a>
+                                            <?php endif; ?>
+
+                                        <?php endif; ?>
+
+                                        <!-- DIAMBIL -->
+                                        <?php if ($p['status'] == 'diambil'): ?>
+
+                                            <?php if (session()->get('role') == 'petugas'): ?>
+                                                <a href="<?= base_url('penarikan/selesai/' . $p['id_penarikan']) ?>"
+                                                    class="btn btn-sm btn-success">
+                                                    ✔
+                                                </a>
+                                            <?php endif; ?>
+
+                                        <?php endif; ?>
+
+                                        <!-- DETAIL -->
+                                        <a href="<?= base_url('penarikan/detail/' . $p['id_penarikan']) ?>"
+                                            class="btn btn-sm btn-info">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+
+                                        <!-- HAPUS -->
+                                        <a href="<?= base_url('penarikan/delete/' . $p['id_penarikan']) ?>"
+                                            onclick="return confirm('Hapus data?')"
+                                            class="btn btn-sm btn-danger">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+
+                                    </div>
+                                </td>
+
+                            </tr>
+                        <?php endforeach; ?>
+
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</div>
 
 <?= $this->endSection() ?>

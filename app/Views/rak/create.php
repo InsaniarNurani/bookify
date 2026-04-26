@@ -1,19 +1,57 @@
 <?= $this->extend('layouts/main') ?>
 <?= $this->section('content') ?>
 
-<h3>Tambah Rak</h3>
+<div class="container py-4">
 
-<form action="<?= base_url('rak/store') ?>" method="post">
+    <!-- HEADER -->
+    <div class="mb-4">
+        <h3 class="fw-bold">
+            <i class="bi bi-bookshelf me-2"></i>Tambah Rak
+        </h3>
+    </div>
 
-    Nama Rak:<br>
-    <input type="text" name="nama_rak" required><br><br>
+    <!-- CARD -->
+    <div class="card shadow-sm">
+        <div class="card-body">
 
-    Lokasi:<br>
-    <input type="text" name="lokasi"><br><br>
+            <form action="<?= base_url('rak/store') ?>" method="post">
 
-    <button type="submit">Simpan</button>
-    <a href="<?= base_url('rak') ?>">Kembali</a>
+                <!-- NAMA RAK -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Nama Rak</label>
+                    <input type="text"
+                        name="nama_rak"
+                        class="form-control"
+                        placeholder="Contoh: Rak A1"
+                        required
+                        autofocus>
+                </div>
 
-</form>
+                <!-- LOKASI -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Lokasi</label>
+                    <input type="text"
+                        name="lokasi"
+                        class="form-control"
+                        placeholder="Contoh: Lantai 2 / Ruang Baca">
+                </div>
+
+                <!-- BUTTON -->
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Simpan
+                    </button>
+
+                    <a href="<?= base_url('rak') ?>" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Kembali
+                    </a>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
 
 <?= $this->endSection() ?>

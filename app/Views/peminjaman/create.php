@@ -1,86 +1,158 @@
 <?= $this->extend('layouts/main') ?>
 <?= $this->section('content') ?>
 
-<h3>Tambah Peminjaman</h3>
+<div class="container py-4">
 
-<form method="post" action="<?= base_url('peminjaman/store') ?>">
-
-    <!-- 🔹 ATAS (2 KOLOM) -->
-    <div style="display:flex; gap:30px;">
-
-        <!-- KIRI -->
-        <div style="flex:1;">
-            <p>Nama Anggota:
-                <b><?= session()->get('nama') ?></b>
-            </p>
-
-            <p>Tanggal Pinjam: <b><?= date('Y-m-d') ?></b></p>
-            <p>Tanggal Kembali: <b><?= date('Y-m-d', strtotime('+7 days')) ?></b></p>
-        </div>
-
-        <!-- KANAN -->
-        <div style="flex:1;">
-            <p>Metode Pengantaran:</p>
-            <select name="metode_pengantaran" id="metode">
-                <option value="ambil">Ambil di Perpustakaan</option>
-                <option value="diantar">Diantar ke Rumah</option>
-            </select>
-            <input type="text" name="alamat" class="form-control" required>
-            <div id="alamatBox" style="display:none; margin-top:10px;">
-                <p>Alamat:</p>
-                <textarea name="alamat"></textarea>
-            </div>
-
-
-        </div>
-
+    <!-- HEADER -->
+    <div class="mb-3">
+        <h3 class="fw-bold">
+            <i class="bi bi-journal-plus me-2"></i>Tambah Peminjaman
+        </h3>
     </div>
 
-    <hr>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
 
-    <!-- 🔻 BUKU DI BAWAH (FULL WIDTH) -->
-    <p><b>Pilih Buku (max 2)</b></p>
+            <form method="post" action="<?= base_url('peminjaman/store') ?>">
 
-    <div style="display:flex; flex-wrap:wrap; gap:15px;">
-        <?php foreach ($buku as $b): ?>
-            <label style="width:200px; border:1px solid #ccc; padding:10px; text-align:center; border-radius:8px;">
+                <!-- 🔹 INFO ATAS -->
+                <div class="row g-3">
 
-                <!-- checkbox -->
-                <input type="checkbox"
-                    name="id_buku[]"
-                    value="<?= $b['id_buku'] ?>"
-                    class="buku-check"
-                    <?= ($b['tersedia'] ?? 0) <= 0 ? 'disabled' : '' ?>><br>
+                    <!-- KIRI -->
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded h-100">
 
-                <!-- cover -->
-                <img src="<?= base_url('uploads/buku/' . $b['cover']) ?>" width="80"><br>
+                            <p class="mb-2">
+                                Nama Anggota:<br>
+                                <b><?= session()->get('nama') ?></b>
+                            </p>
 
-                <!-- judul -->
-                <b><?= $b['judul'] ?></b><br>
+                            <p class="mb-2">
+                                Tanggal Pinjam:<br>
+                                <b><?= date('Y-m-d') ?></b>
+                            </p>
 
-                <!-- stok -->
-                <?php if (($b['tersedia'] ?? 0) > 0): ?>
-                    <small style="color:green;">
-                        Tersedia: <?= $b['tersedia'] ?>
-                    </small>
-                <?php else: ?>
-                    <small style="color:red;">
-                        Stok Habis
-                    </small>
-                <?php endif; ?>
+                            <p class="mb-0">
+                                Tanggal Kembali:<br>
+                                <b><?= date('Y-m-d', strtotime('+7 days')) ?></b>
+                            </p>
 
-            </label>
-        <?php endforeach; ?>
+                        </div>
+                    </div>
+
+                    <!-- KANAN -->
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded h-100">
+
+                            <label class="form-label fw-semibold">
+                                Metode Pengantaran
+                            </label>
+
+                            <select name="metode_pengantaran" id="metode" class="form-select mb-2">
+                                <option value="ambil">Ambil di Perpustakaan</option>
+                                <option value="diantar">Diantar ke Rumah</option>
+                            </select>
+
+                            <!-- tetap dipertahankan -->
+                            <input type="text" name="alamat" class="form-control mb-2" placeholder="Alamat">
+
+                            <div id="alamatBox" style="display:none;">
+                                <label class="form-label">Alamat Lengkap</label>
+                                <textarea name="alamat" class="form-control"></textarea>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <hr>
+
+                <!-- 🔻 BUKU -->
+                <h5 class="fw-bold mb-3">
+                    <i class="bi bi-book me-1"></i>Pilih Buku (max 2)
+                </h5>
+
+                <div class="row g-2">
+
+                    <?php foreach ($buku as $b): ?>
+                        <div class="col-4 col-md-2">
+
+                            <label class="card border-0 shadow-sm text-center p-1 buku-item">
+
+                                <!-- checkbox -->
+                                <input type="checkbox"
+                                    name="id_buku[]"
+                                    value="<?= $b['id_buku'] ?>"
+                                    class="buku-check mb-1"
+                                    <?= ($b['tersedia'] ?? 0) <= 0 ? 'disabled' : '' ?>>
+
+                                <!-- cover -->
+                                <img src="<?= base_url('uploads/buku/' . $b['cover']) ?>"
+                                    class="img-fluid rounded mb-1"
+                                    style="height:100px; object-fit:cover;"
+                                    onerror="this.src='<?= base_url('assets/no-image.png') ?>'">
+
+                                <!-- judul -->
+                                <small class="fw-semibold d-block text-truncate">
+                                    <?= $b['judul'] ?>
+                                </small>
+
+                                <!-- stok -->
+                                <?php if (($b['tersedia'] ?? 0) > 0): ?>
+                                    <small class="text-success">
+                                        <?= $b['tersedia'] ?>
+                                    </small>
+                                <?php else: ?>
+                                    <small class="text-danger">
+                                        Habis
+                                    </small>
+                                <?php endif; ?>
+
+                            </label>
+
+                        </div>
+                    <?php endforeach; ?>
+
+                </div>
+
+                <!-- BUTTON -->
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i>Simpan
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
     </div>
 
-    <br>
-    <button type="submit">Simpan</button>
+</div>
 
-</form>
+<!-- STYLE -->
+<style>
+    .buku-item {
+        cursor: pointer;
+        transition: 0.2s;
+    }
 
-<!-- SCRIPT -->
+    .buku-item:hover {
+        transform: scale(1.05);
+    }
+
+    .buku-item small {
+        font-size: 11px;
+    }
+
+    .buku-check:checked+img {
+        outline: 2px solid #0d6efd;
+        border-radius: 6px;
+    }
+</style>
+
+<!-- SCRIPT (LOGIC TETAP) -->
 <script>
-    // tampil alamat
     const metode = document.getElementById('metode');
     const alamatBox = document.getElementById('alamatBox');
 
@@ -88,7 +160,6 @@
         alamatBox.style.display = (this.value === 'diantar') ? 'block' : 'none';
     });
 
-    // max 2 buku
     const checkboxes = document.querySelectorAll('.buku-check');
 
     checkboxes.forEach(cb => {

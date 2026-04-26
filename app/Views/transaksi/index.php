@@ -1,54 +1,116 @@
 <?= $this->extend('layouts/main') ?>
 <?= $this->section('content') ?>
 
-<h3>Data Transaksi</h3>
+<div class="container py-4">
 
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold">
+            <i class="bi bi-cash-coin me-2"></i>Data Transaksi
+        </h3>
+    </div>
 
+    <!-- CARD -->
+    <div class="card shadow-sm">
+        <div class="card-body">
 
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover align-middle">
 
+                    <thead class="table-light text-center">
+                        <tr>
+                            <th width="80">ID</th>
+                            <th>Nama Anggota</th>
+                            <th>Metode</th>
+                            <th>Status</th>
+                            <th>Tanggal</th>
+                            <th width="180">Aksi</th>
+                        </tr>
+                    </thead>
 
-<table border="1" cellpadding="10">
-    <tr>
-        <th>ID</th>
-        <th>Nama Anggota</th>
-        <th>metode pembayaran</th>
-        <th>Status</th>
-        <th>Tanggal</th>
-        <th>Aksi</th>
-    </tr>
+                    <tbody>
 
-    <?php foreach ($transaksi as $t): ?>
-        <tr>
-            <td><?= $t['id_transaksi'] ?></td>
+                        <?php if (!empty($transaksi)): ?>
+                            <?php foreach ($transaksi as $t): ?>
+                                <tr>
 
-            <td><?= $t['nama_anggota'] ?? '-' ?></td>
-            <td><?= $t['metode_pembayaran'] ?></td>
+                                    <!-- ID -->
+                                    <td class="text-center">
+                                        <?= $t['id_transaksi'] ?>
+                                    </td>
 
-            <td>
-                <?= $t['status'] == 'lunas'
-                    ? '<span style="color:green">Lunas</span>'
-                    : '<span style="color:red">Belum Bayar</span>' ?>
-            </td>
+                                    <!-- NAMA -->
+                                    <td class="fw-semibold">
+                                        <?= esc($t['nama_anggota'] ?? '-') ?>
+                                    </td>
 
-            <td><?= $t['tanggal'] ?></td>
+                                    <!-- METODE -->
+                                    <td>
+                                        <span class="badge bg-info text-dark">
+                                            <?= strtoupper($t['metode_pembayaran']) ?>
+                                        </span>
+                                    </td>
 
-            <td>
-                <a href="<?= base_url('transaksi/detail/' . $t['id_transaksi']) ?>"
-                    style="color:blue;">Detail</a> |
+                                    <!-- STATUS -->
+                                    <td class="text-center">
+                                        <?php if ($t['status'] == 'lunas'): ?>
+                                            <span class="badge bg-success">Lunas</span>
+                                        <?php else: ?>
+                                            <span class="badge bg-danger">Belum Bayar</span>
+                                        <?php endif; ?>
+                                    </td>
 
-                <a href="<?= base_url('transaksi/delete/' . $t['id_transaksi']) ?>"
-                    onclick="return confirm('Hapus data?')">
-                    Hapus
-                </a>
+                                    <!-- TANGGAL -->
+                                    <td>
+                                        <small><?= $t['tanggal'] ?></small>
+                                    </td>
 
-                <?php if ($t['status'] == 'belum_bayar'): ?>
-                    <a href="<?= base_url('transaksi/bayar/' . $t['id_transaksi']) ?>"
-                        style="color:blue;">Bayar</a>
-                <?php endif; ?>
-            </td>
-        </tr>
-    <?php endforeach; ?>
+                                    <!-- AKSI -->
+                                    <td>
+                                        <div class="d-flex gap-1 flex-wrap">
 
-</table>
+                                            <!-- DETAIL -->
+                                            <a href="<?= base_url('transaksi/detail/' . $t['id_transaksi']) ?>"
+                                                class="btn btn-sm btn-primary">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+
+                                            <!-- HAPUS -->
+                                            <a href="<?= base_url('transaksi/delete/' . $t['id_transaksi']) ?>"
+                                                onclick="return confirm('Hapus data?')"
+                                                class="btn btn-sm btn-danger">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+
+                                            <!-- BAYAR -->
+                                            <?php if ($t['status'] == 'belum_bayar'): ?>
+                                                <a href="<?= base_url('transaksi/bayar/' . $t['id_transaksi']) ?>"
+                                                    class="btn btn-sm btn-success">
+                                                    <i class="bi bi-credit-card"></i>
+                                                </a>
+                                            <?php endif; ?>
+
+                                        </div>
+                                    </td>
+
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="6" class="text-center">
+                                    Data transaksi belum tersedia
+                                </td>
+                            </tr>
+                        <?php endif; ?>
+
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</div>
 
 <?= $this->endSection() ?>

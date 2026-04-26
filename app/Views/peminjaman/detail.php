@@ -1,111 +1,166 @@
 <?= $this->extend('layouts/main') ?>
 <?= $this->section('content') ?>
 
-<div id="printArea">
+<div class="container py-4">
 
-    <h3>Detail Peminjaman</h3>
+    <div id="printArea">
 
-    <!-- ✅ NAMA ANGGOTA (AMAN) -->
-    <p><b>Nama Anggota:</b> <?= $peminjaman['nama_anggota'] ?? '-' ?></p>
+        <!-- HEADER -->
+        <div class="mb-4">
+            <h3 class="fw-bold">
+                <i class="bi bi-receipt me-2"></i>Detail Peminjaman
+            </h3>
+        </div>
 
-    <!-- ✅ STATUS -->
-    <p><b>Status:</b>
-        <?php if (($peminjaman['metode_pengantaran'] ?? '') == 'diantar'): ?>
+        <!-- CARD INFO -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
 
-            <?php if (($peminjaman['status_pengiriman'] ?? '') == 'menunggu_konfirmasi'): ?>
-                <span style="color:orange; font-weight:bold;">Menunggu Konfirmasi</span>
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <strong>Nama Anggota:</strong><br>
+                        <?= $peminjaman['nama_anggota'] ?? '-' ?>
+                    </div>
 
-            <?php elseif (($peminjaman['status_pengiriman'] ?? '') == 'menunggu_pembayaran'): ?>
-                <span style="color:red; font-weight:bold;">Menunggu Pembayaran</span>
+                    <div class="col-md-6 mb-2">
+                        <strong>Status:</strong><br>
 
-            <?php elseif (($peminjaman['status_pengiriman'] ?? '') == 'siap_dikirim'): ?>
-                <span style="color:blue; font-weight:bold;">Siap Dikirim</span>
+                        <?php if (($peminjaman['metode_pengantaran'] ?? '') == 'diantar'): ?>
 
-            <?php elseif (($peminjaman['status_pengiriman'] ?? '') == 'diantar'): ?>
-                <span style="color:green; font-weight:bold;">Sedang Diantar</span>
+                            <?php if (($peminjaman['status_pengiriman'] ?? '') == 'menunggu_konfirmasi'): ?>
+                                <span class="badge bg-warning text-dark">Menunggu Konfirmasi</span>
 
-            <?php else: ?>
-                <span>-</span>
-            <?php endif; ?>
+                            <?php elseif (($peminjaman['status_pengiriman'] ?? '') == 'menunggu_pembayaran'): ?>
+                                <span class="badge bg-danger">Menunggu Pembayaran</span>
 
-        <?php else: ?>
-            <span style="color:green;">
-                <?= $peminjaman['status'] ?? '-' ?>
-            </span>
-        <?php endif; ?>
-    </p>
+                            <?php elseif (($peminjaman['status_pengiriman'] ?? '') == 'siap_dikirim'): ?>
+                                <span class="badge bg-primary">Siap Dikirim</span>
 
-    <!-- ✅ DATA LAIN -->
-    <p><b>Tanggal Pinjam:</b> <?= $peminjaman['tanggal_pinjam'] ?? '-' ?></p>
-    <p><b>Tanggal Kembali:</b> <?= $peminjaman['tanggal_kembali'] ?? '-' ?></p>
-    <p><b>Metode:</b> <?= $peminjaman['metode_pengantaran'] ?? '-' ?></p>
+                            <?php elseif (($peminjaman['status_pengiriman'] ?? '') == 'diantar'): ?>
+                                <span class="badge bg-success">Sedang Diantar</span>
 
-    <?php if (($peminjaman['metode_pengantaran'] ?? '') == 'diantar'): ?>
+                            <?php else: ?>
+                                <span class="badge bg-secondary">-</span>
+                            <?php endif; ?>
 
-        <p><b>Ongkir:</b> Rp <?= number_format($peminjaman['ongkir'] ?? 0, 0, ',', '.') ?></p>
+                        <?php else: ?>
+                            <span class="badge bg-success">
+                                <?= $peminjaman['status'] ?? '-' ?>
+                            </span>
+                        <?php endif; ?>
+                    </div>
 
-        <p><b>Total Bayar:</b> Rp <?= number_format($peminjaman['total_bayar'] ?? 0, 0, ',', '.') ?></p>
+                    <div class="col-md-4 mb-2">
+                        <strong>Tanggal Pinjam:</strong><br>
+                        <?= $peminjaman['tanggal_pinjam'] ?? '-' ?>
+                    </div>
 
-    <?php else: ?>
+                    <div class="col-md-4 mb-2">
+                        <strong>Tanggal Kembali:</strong><br>
+                        <?= $peminjaman['tanggal_kembali'] ?? '-' ?>
+                    </div>
 
-        <p><b>Ongkir:</b> -</p>
-        <p><b>Total Bayar:</b> -</p>
+                    <div class="col-md-4 mb-2">
+                        <strong>Metode:</strong><br>
+                        <?= ucfirst($peminjaman['metode_pengantaran'] ?? '-') ?>
+                    </div>
 
-    <?php endif; ?>
+                    <div class="col-md-6 mt-2">
+                        <strong>Ongkir:</strong><br>
+                        <?php if (($peminjaman['metode_pengantaran'] ?? '') == 'diantar'): ?>
+                            Rp <?= number_format($peminjaman['ongkir'] ?? 0, 0, ',', '.') ?>
+                        <?php else: ?>
+                            -
+                        <?php endif; ?>
+                    </div>
 
-    <!-- ✅ DENDA -->
-    <p><b>Denda:</b>
-        <?php if (!empty($peminjaman['denda']) && $peminjaman['denda'] > 0): ?>
-            <span style="color:red;">
-                Rp <?= number_format($peminjaman['denda'], 0, ',', '.') ?>
-            </span>
-        <?php else: ?>
-            <span style="color:green;">Tidak ada denda</span>
-        <?php endif; ?>
-    </p>
+                    <div class="col-md-6 mt-2">
+                        <strong>Total Bayar:</strong><br>
+                        <?php if (($peminjaman['metode_pengantaran'] ?? '') == 'diantar'): ?>
+                            Rp <?= number_format($peminjaman['total_bayar'] ?? 0, 0, ',', '.') ?>
+                        <?php else: ?>
+                            -
+                        <?php endif; ?>
+                    </div>
 
-    <hr>
+                    <div class="col-md-12 mt-3">
+                        <strong>Denda:</strong><br>
+                        <?php if (!empty($peminjaman['denda']) && $peminjaman['denda'] > 0): ?>
+                            <span class="badge bg-danger">
+                                Rp <?= number_format($peminjaman['denda'], 0, ',', '.') ?>
+                            </span>
+                        <?php else: ?>
+                            <span class="badge bg-success">Tidak ada denda</span>
+                        <?php endif; ?>
+                    </div>
 
-    <h4>Detail Buku</h4>
+                </div>
 
-    <table border="1" cellpadding="8" cellspacing="0" width="100%">
-        <tr>
-            <th>Judul</th>
-            <th>Cover</th>
-            <th>Jumlah Pinjam</th>
-        </tr>
+            </div>
+        </div>
 
-        <?php if (!empty($peminjaman['buku'])): ?>
-            <?php foreach ($peminjaman['buku'] as $b): ?>
-                <tr>
-                    <td><?= $b['judul'] ?? '-' ?></td>
-                    <td>
-                        <img src="<?= base_url('uploads/buku/' . ($b['cover'] ?? 'default.png')) ?>" width="60">
-                    </td>
-                    <td><?= $b['jumlah'] ?? 1 ?></td>
-                </tr>
-            <?php endforeach; ?>
-        <?php else: ?>
-            <tr>
-                <td colspan="3" align="center">Tidak ada data buku</td>
-            </tr>
-        <?php endif; ?>
-    </table>
+        <!-- CARD BUKU -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="fw-bold mb-3">
+                    <i class="bi bi-book me-2"></i>Detail Buku
+                </h5>
 
-</div>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped align-middle text-center">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Cover</th>
+                                <th>Judul</th>
+                                <th>Jumlah</th>
+                            </tr>
+                        </thead>
+                        <tbody>
 
-<br>
+                            <?php if (!empty($peminjaman['buku'])): ?>
+                                <?php foreach ($peminjaman['buku'] as $b): ?>
+                                    <tr>
+                                        <td>
+                                            <img src="<?= base_url('uploads/buku/' . ($b['cover'] ?? 'default.png')) ?>"
+                                                class="img-thumbnail"
+                                                style="width:60px; height:80px; object-fit:cover;">
+                                        </td>
+                                        <td class="text-start">
+                                            <?= $b['judul'] ?? '-' ?>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-primary">
+                                                <?= $b['jumlah'] ?? 1 ?>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="3">Tidak ada data buku</td>
+                                </tr>
+                            <?php endif; ?>
 
-<div class="no-print" style="margin-bottom:15px;">
-    <a href="<?= base_url('peminjaman') ?>"
-        style="padding:8px 12px; background:#ccc; text-decoration:none; border-radius:5px;">
-        ⬅ Kembali
-    </a>
+                        </tbody>
+                    </table>
+                </div>
 
-    <button onclick="window.print()"
-        style="padding:8px 12px; background:green; color:white; border:none; border-radius:5px;">
-        🖨 Print
-    </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- BUTTON -->
+    <div class="mt-4 no-print">
+        <a href="<?= base_url('peminjaman') ?>" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali
+        </a>
+
+        <button onclick="window.print()" class="btn btn-success">
+            <i class="bi bi-printer"></i> Print
+        </button>
+    </div>
+
 </div>
 
 <style>

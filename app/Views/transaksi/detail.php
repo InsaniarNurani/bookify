@@ -1,67 +1,116 @@
 <?= $this->extend('layouts/main') ?>
 <?= $this->section('content') ?>
 
-<h3>Detail Transaksi</h3>
+<div class="container py-4" id="printArea">
 
-<hr>
+    <!-- HEADER -->
+    <div class="mb-4">
+        <h3 class="fw-bold">
+            <i class="bi bi-receipt me-2"></i>Detail Transaksi
+        </h3>
+    </div>
 
+    <!-- CARD -->
+    <div class="card shadow-sm">
+        <div class="card-body">
 
-<p><b>Nama Anggota:</b> <?= $transaksi['nama_anggota'] ?? '-' ?></p>
+            <div class="row">
 
-<p><b>Metode Pengantaran:</b> <?= $transaksi['metode_pengantaran'] ?? '-' ?></p>
+                <div class="col-md-6 mb-3">
+                    <strong>Nama Anggota</strong><br>
+                    <?= $transaksi['nama_anggota'] ?? '-' ?>
+                </div>
 
-<p><b>Metode Pembayaran:</b> <?= strtoupper($transaksi['metode_pembayaran'] ?? '-') ?></p>
+                <div class="col-md-6 mb-3">
+                    <strong>Metode Pengantaran</strong><br>
+                    <?= ucfirst($transaksi['metode_pengantaran'] ?? '-') ?>
+                </div>
 
-<p><b>Ongkir:</b> Rp <?= number_format($transaksi['ongkir'] ?? 0, 0, ',', '.') ?></p>
+                <div class="col-md-6 mb-3">
+                    <strong>Metode Pembayaran</strong><br>
+                    <?= strtoupper($transaksi['metode_pembayaran'] ?? '-') ?>
+                </div>
 
-<p><b>Total Bayar:</b> Rp <?= number_format($transaksi['total_bayar'] ?? 0, 0, ',', '.') ?></p>
+                <div class="col-md-6 mb-3">
+                    <strong>Tanggal</strong><br>
+                    <?= $transaksi['tanggal'] ?? '-' ?>
+                </div>
 
-<p>
-    <b>Status:</b>
-    <?= ($transaksi['status'] ?? '') == 'lunas'
-        ? '<span style="color:green;">Lunas</span>'
-        : '<span style="color:red;">Belum Bayar</span>' ?>
-</p>
+                <div class="col-md-6 mb-3">
+                    <strong>Ongkir</strong><br>
+                    <span class="text-primary fw-bold">
+                        Rp <?= number_format($transaksi['ongkir'] ?? 0, 0, ',', '.') ?>
+                    </span>
+                </div>
 
-<p><b>Tanggal:</b> <?= $transaksi['tanggal'] ?? '-' ?></p>
+                <div class="col-md-6 mb-3">
+                    <strong>Total Bayar</strong><br>
+                    <span class="text-danger fw-bold fs-5">
+                        Rp <?= number_format($transaksi['total_bayar'] ?? 0, 0, ',', '.') ?>
+                    </span>
+                </div>
 
-<hr>
+                <div class="col-md-6 mb-3">
+                    <strong>Status</strong><br>
+                    <?php if (($transaksi['status'] ?? '') == 'lunas'): ?>
+                        <span class="badge bg-success">Lunas</span>
+                    <?php else: ?>
+                        <span class="badge bg-danger">Belum Bayar</span>
+                    <?php endif; ?>
+                </div>
 
-<!-- 🔥 BUKTI PEMBAYARAN -->
-<?php if (!empty($transaksi['bukti_pembayaran'])): ?>
-    <p><b>Bukti Pembayaran:</b></p>
-    <img src="<?= base_url('uploads/bukti/' . $transaksi['bukti_pembayaran']) ?>" width="200">
-<?php else: ?>
-    <p><b>Bukti Pembayaran:</b> -</p>
-<?php endif; ?>
+            </div>
 
-<br><br>
+            <hr>
 
-<!-- 🔘 BUTTON -->
-<a href="<?= base_url('transaksi') ?>"
-    style="padding:8px 12px; background:#ccc; text-decoration:none; border-radius:5px;">
-    ⬅ Kembali
-</a>
+            <!-- BUKTI -->
+            <h5 class="fw-bold mb-3">Bukti Pembayaran</h5>
 
-<button onclick="window.print()"
-    style="padding:8px 12px; background:green; color:white; border:none; border-radius:5px;">
-    🖨 Print
-</button>
+            <?php if (!empty($transaksi['bukti_pembayaran'])): ?>
+                <img src="<?= base_url('uploads/bukti/' . $transaksi['bukti_pembayaran']) ?>"
+                    class="img-thumbnail"
+                    style="max-width:250px;">
+            <?php else: ?>
+                <p class="text-muted">Tidak ada bukti pembayaran</p>
+            <?php endif; ?>
 
-<!-- 🖨 STYLE PRINT -->
+        </div>
+    </div>
+
+</div>
+
+<!-- BUTTON -->
+<div class="container mt-3 no-print">
+    <a href="<?= base_url('transaksi') ?>" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Kembali
+    </a>
+
+    <button onclick="window.print()" class="btn btn-success">
+        <i class="bi bi-printer"></i> Print
+    </button>
+</div>
+
+<!-- PRINT STYLE -->
 <style>
     @media print {
         body * {
             visibility: hidden;
         }
 
-        body {
-            margin: 0;
+        #printArea,
+        #printArea * {
+            visibility: visible;
         }
 
-        .content,
-        .content * {
-            visibility: visible;
+        #printArea {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+        }
+
+        .no-print {
+            display: none !important;
         }
     }
 </style>

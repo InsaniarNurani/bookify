@@ -1,54 +1,75 @@
-<!-- app/Views/users/create.php -->
-<!DOCTYPE html>
-<html lang="en">
+<?= $this->extend('layouts/main') ?>
+<?= $this->section('content') ?>
 
-<head>
-    <meta charset="UTF-8">
-    <title>Tambah User</title>
+<div class="container py-4">
 
-    <!-- MemanggilBootstrap 5.3 CSS dan Icon -->
-    <link href="<?= base_url('assets/css/bootstrap.min.css') ?>" rel="stylesheet">
-    <link href="<?= base_url('assets/bootstrap-icons-1.13.1/bootstrap-icons.css') ?>" rel="stylesheet">
-</head>
+    <!-- HEADER -->
+    <div class="mb-4">
+        <h3 class="fw-bold">
+            <i class="bi bi-person-plus me-2"></i>Tambah User
+        </h3>
+    </div>
 
-<body>
+    <!-- ALERT -->
+    <?php if (session()->getFlashdata('error')): ?>
+        <div class="alert alert-danger">
+            <i class="bi bi-exclamation-triangle"></i>
+            <?= session()->getFlashdata('error') ?>
+        </div>
+    <?php endif; ?>
 
-    <div>
-        <div>
-            <div>
-                <h4>Form Tambah User</h4>
-            </div>
-            <div>
+    <!-- CARD -->
+    <div class="card shadow-sm">
+        <div class="card-body">
 
-                <?php if (session()->getFlashdata('error')): ?>
-                    <div><?= session()->getFlashdata('error') ?></div>
-                <?php endif; ?>
+            <form action="<?= base_url('users/store') ?>" method="post" enctype="multipart/form-data">
 
-                <form action="<?= base_url('users/store') ?>" method="post" enctype="multipart/form-data">
+                <div class="row">
 
-                    <div>
-                        <label>Nama Lengkap</label><br>
-                        <input type="text" name="nama" required>
+                    <!-- NAMA -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Nama Lengkap</label>
+                        <input type="text"
+                            name="nama"
+                            class="form-control"
+                            placeholder="Masukkan nama lengkap"
+                            required>
                     </div>
 
-                    <div>
-                        <label>Email</label><br>
-                        <input type="text" name="email" required>
+                    <!-- EMAIL -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Email</label>
+                        <input type="email"
+                            name="email"
+                            class="form-control"
+                            placeholder="contoh@email.com"
+                            required>
                     </div>
 
-                    <div>
-                        <label>Username</label><br>
-                        <input type="text" name="username" required>
+                    <!-- USERNAME -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Username</label>
+                        <input type="text"
+                            name="username"
+                            class="form-control"
+                            placeholder="Masukkan username"
+                            required>
                     </div>
 
-                    <div>
-                        <label>Password</label><br>
-                        <input type="password" name="password" required>
+                    <!-- PASSWORD -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Password</label>
+                        <input type="password"
+                            name="password"
+                            class="form-control"
+                            placeholder="Masukkan password"
+                            required>
                     </div>
 
-                    <div>
-                        <label>Role</label><br>
-                        <select name="role" required>
+                    <!-- ROLE -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Role</label>
+                        <select name="role" class="form-select" required>
                             <option value="">-- Pilih Role --</option>
                             <option value="admin">Admin</option>
                             <option value="petugas">Petugas</option>
@@ -56,25 +77,36 @@
                         </select>
                     </div>
 
-                    <div>
-                        <label>Foto Profil</label><br>
-                        <input type="file" name="foto" accept="image/*"><br>
-                        <small>Kosongkan jika tidak upload foto</small>
+                    <!-- FOTO -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Foto Profil</label>
+                        <input type="file"
+                            name="foto"
+                            class="form-control"
+                            accept="image/*">
+                        <small class="text-muted">
+                            Kosongkan jika tidak upload foto
+                        </small>
                     </div>
 
-                    <br>
-                    <button type="submit">Simpan</button>
-                    <a href="<?= base_url('login') ?>">Sudah Punya Akun</a>
+                </div>
 
-                </form>
+                <!-- BUTTON -->
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Simpan
+                    </button>
 
-            </div>
+                    <a href="<?= base_url('users') ?>" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Kembali
+                    </a>
+                </div>
+
+            </form>
+
         </div>
     </div>
 
-</body>
+</div>
 
-<!-- Memanggil Bootstrap JS -->
-<script src="<?= base_url('assets/bootstrap/js/bootstrap.bundle.min.js') ?>"></script>
-
-</html>
+<?= $this->endSection() ?>

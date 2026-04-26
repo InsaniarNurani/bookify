@@ -1,85 +1,160 @@
 <?= $this->extend('layouts/main') ?>
 <?= $this->section('content') ?>
 
-<h3>Pembayaran Penarikan</h3>
+<div class="container py-4">
 
-<?php
-$biaya = $penarikan['biaya'] ?? 10000;
-?>
+    <!-- HEADER -->
+    <div class="mb-4">
+        <h3 class="fw-bold">
+            <i class="bi bi-cash-coin me-2"></i>Pembayaran Penarikan
+        </h3>
+    </div>
 
-<p><b>ID Penarikan:</b> <?= $penarikan['id_penarikan'] ?></p>
-<p><b>ID Peminjaman:</b> <?= $penarikan['id_peminjaman'] ?></p>
+    <?php
+    $biaya = $penarikan['biaya'] ?? 10000;
+    ?>
 
-<hr>
+    <!-- INFO -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
 
-<p><b>Biaya Penarikan:</b> Rp <?= number_format($biaya, 0, ',', '.') ?></p>
+            <div class="mb-2">
+                <strong>ID Penarikan:</strong><br>
+                <?= $penarikan['id_penarikan'] ?>
+            </div>
 
-<hr>
+            <div class="mb-2">
+                <strong>ID Peminjaman:</strong><br>
+                <?= $penarikan['id_peminjaman'] ?>
+            </div>
 
-<form method="post"
-    action="<?= base_url('penarikan/prosesBayar/' . $penarikan['id_penarikan']) ?>"
-    enctype="multipart/form-data">
+            <hr>
 
-    <p><b>Pilih Metode Pembayaran:</b></p>
+            <div class="d-flex justify-content-between">
+                <span>Biaya Penarikan</span>
+                <strong class="text-danger fs-5">
+                    Rp <?= number_format($biaya, 0, ',', '.') ?>
+                </strong>
+            </div>
 
-    <label>
-        <input type="radio" name="metode" value="dana" onchange="showMetode()" required>
-        DANA
-    </label><br>
+        </div>
+    </div>
 
-    <label>
-        <input type="radio" name="metode" value="transfer" onchange="showMetode()">
-        Transfer Bank
-    </label><br>
+    <!-- FORM -->
+    <form method="post"
+        action="<?= base_url('penarikan/prosesBayar/' . $penarikan['id_penarikan']) ?>"
+        enctype="multipart/form-data">
 
-    <label>
-        <input type="radio" name="metode" value="cod" onchange="showMetode()">
-        COD (Bayar di Tempat)
-    </label>
+        <div class="card shadow-sm">
+            <div class="card-body">
 
-    <br><br>
+                <h5 class="mb-3 fw-bold">Pilih Metode Pembayaran</h5>
 
-    <!-- INFO METODE -->
-    <div id="infoMetode" style="padding:10px;border:1px solid #ccc;display:none;"></div>
+                <div class="row g-3">
 
-    <br>
+                    <!-- DANA -->
+                    <div class="col-md-4">
+                        <label class="w-100">
+                            <input type="radio" name="metode" value="dana" class="d-none" onchange="showMetode()" required>
+                            <div class="border rounded p-3 text-center metode-box">
+                                <i class="bi bi-wallet2 fs-3 text-primary"></i>
+                                <div>DANA</div>
+                            </div>
+                        </label>
+                    </div>
 
-    <p><b>Upload Bukti Pembayaran (WAJIB untuk DANA / Transfer):</b></p>
-    <input type="file" name="bukti" accept="image/*">
+                    <!-- TRANSFER -->
+                    <div class="col-md-4">
+                        <label class="w-100">
+                            <input type="radio" name="metode" value="transfer" class="d-none" onchange="showMetode()">
+                            <div class="border rounded p-3 text-center metode-box">
+                                <i class="bi bi-bank fs-3 text-success"></i>
+                                <div>Transfer Bank</div>
+                            </div>
+                        </label>
+                    </div>
 
-    <br><br>
+                    <!-- COD -->
+                    <div class="col-md-4">
+                        <label class="w-100">
+                            <input type="radio" name="metode" value="cod" class="d-none" onchange="showMetode()">
+                            <div class="border rounded p-3 text-center metode-box">
+                                <i class="bi bi-truck fs-3 text-warning"></i>
+                                <div>COD</div>
+                            </div>
+                        </label>
+                    </div>
 
-    <button type="submit" style="padding:10px 20px;background:black;color:white;">
-        Konfirmasi Pembayaran
-    </button>
+                </div>
 
-</form>
+                <!-- INFO DINAMIS -->
+                <div id="infoMetode" class="alert alert-info mt-4 d-none"></div>
 
+                <!-- UPLOAD -->
+                <div class="mt-4">
+                    <label class="form-label fw-bold">
+                        Upload Bukti Pembayaran (Wajib untuk DANA / Transfer)
+                    </label>
+                    <input type="file" name="bukti" class="form-control" accept="image/*">
+                </div>
+
+                <!-- BUTTON -->
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-dark w-100">
+                        <i class="bi bi-check-circle"></i> Konfirmasi Pembayaran
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+    </form>
+
+</div>
+
+<!-- STYLE -->
+<style>
+    .metode-box {
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .metode-box:hover {
+        background: #f8f9fa;
+        transform: scale(1.03);
+    }
+
+    input[type="radio"]:checked+.metode-box {
+        border: 2px solid #0d6efd;
+        background: #e7f1ff;
+    }
+</style>
+
+<!-- SCRIPT -->
 <script>
     function showMetode() {
         let metode = document.querySelector('input[name="metode"]:checked').value;
         let info = document.getElementById("infoMetode");
 
+        info.classList.remove("d-none");
+
         if (metode === "dana") {
-            info.style.display = "block";
             info.innerHTML = `
-            <b>Bayar ke DANA:</b><br>
-            Nomor: 0812-3456-7890<br>
-            A/N: insaniar nurani
-        `;
+                <b>DANA</b><br>
+                Nomor: 0812-3456-7890<br>
+                A/N: Insaniar Nurani
+            `;
         } else if (metode === "transfer") {
-            info.style.display = "block";
             info.innerHTML = `
-            <b>Transfer Bank:</b><br>
-            Bank BRI: 123-456-7890<br>
-            A/N: insaniar nurani
-        `;
+                <b>Transfer Bank</b><br>
+                BRI: 123-456-7890<br>
+                A/N: Insaniar Nurani
+            `;
         } else if (metode === "cod") {
-            info.style.display = "block";
             info.innerHTML = `
-            <b>COD:</b><br>
-            Pembayaran dilakukan saat petugas datang.
-        `;
+                <b>COD</b><br>
+                Bayar langsung saat petugas datang.
+            `;
         }
     }
 </script>

@@ -1,35 +1,73 @@
 <?= $this->extend('layouts/main') ?>
 <?= $this->section('content') ?>
 
-<h3>Tambah Pengembalian</h3>
+<div class="container py-4">
 
-<form method="post" action="<?= base_url('pengembalian/store') ?>" method="post">
+    <!-- HEADER -->
+    <div class="mb-4">
+        <h3 class="fw-bold">
+            <i class="bi bi-arrow-return-left me-2"></i>Tambah Pengembalian
+        </h3>
+    </div>
 
-    <!-- PEMINJAMAN -->
-    Peminjaman:<br>
-    <select name="id_peminjaman" required style="width:100%">
-        <option value="">Pilih Peminjaman</option>
-        <?php foreach ($peminjaman as $p): ?>
-            <option value="<?= $p['id_peminjaman'] ?>">
-                ID: <?= $p['id_peminjaman'] ?> |
-                Tgl Pinjam: <?= $p['tanggal_pinjam'] ?>
-            </option>
-        <?php endforeach; ?>
-    </select>
-    <br><br>
+    <!-- CARD -->
+    <div class="card shadow-sm">
+        <div class="card-body">
 
-    <!-- TANGGAL DIKEMBALIKAN -->
-    Tanggal Dikembalikan:<br>
-    <input type="date" name="tanggal_dikembalikan" required style="width:100%">
-    <br><br>
+            <form method="post" action="<?= base_url('pengembalian/store') ?>">
 
-    <!-- DENDA -->
-    Denda:<br>
-    <input type="number" name="denda" value="0" step="0.01" style="width:100%">
-    <br><br>
+                <!-- PEMINJAMAN -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Peminjaman</label>
+                    <select name="id_peminjaman" class="form-select" required>
+                        <option value="">-- Pilih Peminjaman --</option>
+                        <?php foreach ($peminjaman as $p): ?>
+                            <option value="<?= $p['id_peminjaman'] ?>">
+                                ID: <?= $p['id_peminjaman'] ?> |
+                                Tgl: <?= $p['tanggal_pinjam'] ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
 
-    <button type="submit">Simpan Pengembalian</button>
+                <!-- TANGGAL -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Tanggal Dikembalikan</label>
+                    <input type="date"
+                        name="tanggal_dikembalikan"
+                        class="form-control"
+                        required>
+                </div>
 
-</form>
+                <!-- DENDA -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Denda</label>
+                    <input type="number"
+                        name="denda"
+                        class="form-control"
+                        value="0"
+                        step="0.01">
+                    <small class="text-muted">
+                        Isi jika ada keterlambatan
+                    </small>
+                </div>
+
+                <!-- BUTTON -->
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Simpan
+                    </button>
+
+                    <a href="<?= base_url('pengembalian') ?>" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Kembali
+                    </a>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
 
 <?= $this->endSection() ?>

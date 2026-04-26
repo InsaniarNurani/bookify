@@ -1,56 +1,135 @@
 <?= $this->extend('layouts/main') ?>
 <?= $this->section('content') ?>
 
-<h3>Pembayaran Denda</h3>
+<div class="container py-4">
 
-<hr>
+    <!-- HEADER -->
+    <div class="mb-4">
+        <h3 class="fw-bold">
+            <i class="bi bi-cash-coin me-2"></i>Pembayaran Denda
+        </h3>
+    </div>
 
-<!-- 🔥 INFO DATA -->
-<p><b>ID Pengembalian:</b> <?= $pengembalian['id_pengembalian'] ?></p>
-<p><b>Nama Anggota:</b> <?= $pengembalian['nama_anggota'] ?? '-' ?></p>
+    <!-- INFO -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
 
-<p><b>Total Denda:</b>
-    <span style="color:red; font-weight:bold;">
-        Rp <?= number_format($pengembalian['denda'] ?? 0, 0, ',', '.') ?>
-    </span>
-</p>
+            <h5 class="fw-bold mb-3">Detail Pengembalian</h5>
 
-<hr>
+            <div class="row">
+                <div class="col-md-6 mb-2">
+                    <strong>ID Pengembalian</strong><br>
+                    <?= $pengembalian['id_pengembalian'] ?>
+                </div>
 
-<!-- 🔥 FORM BAYAR -->
-<form method="post" action="<?= base_url('pengembalian/prosesBayar/' . $pengembalian['id_pengembalian']) ?>" enctype="multipart/form-data">
+                <div class="col-md-6 mb-2">
+                    <strong>Nama Anggota</strong><br>
+                    <?= $pengembalian['nama_anggota'] ?? '-' ?>
+                </div>
 
-    <p><b>Pilih Metode Pembayaran:</b></p>
+                <div class="col-md-6 mb-2">
+                    <strong>Total Denda</strong><br>
+                    <span class="badge bg-danger fs-6">
+                        Rp <?= number_format($pengembalian['denda'] ?? 0, 0, ',', '.') ?>
+                    </span>
+                </div>
+            </div>
 
-    <label>
-        <input type="radio" name="metode" value="transfer" required>
-        Transfer
-    </label><br>
+        </div>
+    </div>
 
-    <label>
-        <input type="radio" name="metode" value="cod">
-        COD (Bayar di Tempat)
-    </label>
+    <!-- FORM -->
+    <div class="card shadow-sm">
+        <div class="card-body">
 
-    <br><br>
+            <form method="post"
+                action="<?= base_url('pengembalian/prosesBayar/' . $pengembalian['id_pengembalian']) ?>"
+                enctype="multipart/form-data">
 
-    <p><b>Upload Bukti (WAJIB jika Transfer):</b></p>
-    <input type="file" name="bukti" accept="image/*">
+                <!-- METODE -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Metode Pembayaran</label>
 
-    <br><br>
+                    <div class="form-check">
+                        <input class="form-check-input"
+                            type="radio"
+                            name="metode"
+                            value="transfer"
+                            required>
+                        <label class="form-check-label">
+                            Transfer Bank
+                        </label>
+                    </div>
 
-    <button type="submit"
-        style="padding:10px 20px; background:black; color:white; border:none; border-radius:5px;">
-        💳 Bayar Sekarang
-    </button>
+                    <div class="form-check">
+                        <input class="form-check-input"
+                            type="radio"
+                            name="metode"
+                            value="cod">
+                        <label class="form-check-label">
+                            COD (Bayar di Tempat)
+                        </label>
+                    </div>
+                </div>
 
-</form>
+                <!-- INFO DINAMIS -->
+                <div id="infoMetode"
+                    class="alert alert-info d-none"></div>
 
-<br>
+                <!-- UPLOAD -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">
+                        Upload Bukti (Wajib jika Transfer)
+                    </label>
+                    <input type="file"
+                        name="bukti"
+                        class="form-control"
+                        accept="image/*">
+                </div>
 
-<a href="<?= base_url('pengembalian') ?>"
-    style="padding:8px 12px; background:#ccc; text-decoration:none; border-radius:5px;">
-    ⬅ Kembali
-</a>
+                <!-- BUTTON -->
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-dark">
+                        <i class="bi bi-check-circle"></i> Bayar Sekarang
+                    </button>
+
+                    <a href="<?= base_url('pengembalian') ?>"
+                        class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Kembali
+                    </a>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- SCRIPT INFO -->
+<script>
+    document.querySelectorAll('input[name="metode"]').forEach(el => {
+        el.addEventListener('change', function() {
+
+            let info = document.getElementById('infoMetode');
+
+            if (this.value === 'transfer') {
+                info.classList.remove('d-none');
+                info.innerHTML = `
+                    <b>Transfer Bank:</b><br>
+                    Bank BRI: 123-456-7890<br>
+                    A/N: insaniar nurani
+                `;
+            } else {
+                info.classList.remove('d-none');
+                info.innerHTML = `
+                    <b>COD:</b><br>
+                    Bayar saat bertemu petugas.
+                `;
+            }
+
+        });
+    });
+</script>
 
 <?= $this->endSection() ?>

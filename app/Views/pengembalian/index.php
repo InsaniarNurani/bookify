@@ -1,80 +1,140 @@
 <?= $this->extend('layouts/main') ?>
 <?= $this->section('content') ?>
 
-<h3>Data Pengembalian</h3>
+<div class="container py-4">
 
-<br><br>
+    <!-- HEADER -->
+    <div class="mb-3">
+        <h3 class="fw-bold">
+            <i class="bi bi-arrow-return-left me-2"></i>Data Pengembalian
+        </h3>
+    </div>
 
-<table border="1" cellpadding="10">
-    <tr>
-        <th>ID</th>
-        <th>ID Peminjaman</th>
-        <th>Nama Anggota</th>
-        <th>Tgl Pinjam</th>
-        <th>Tgl Dikembalikan</th>
-        <th>Denda</th>
-        <th>Status</th>
-        <th>Status Bayar</th>
-        <th>Aksi</th>
-    </tr>
+    <!-- CARD -->
+    <div class="card shadow-sm">
+        <div class="card-body">
 
-    <?php foreach ($pengembalian as $p): ?>
-        <tr>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover align-middle">
 
-            <td><?= $p['id_pengembalian'] ?></td>
-            <td><?= $p['id_peminjaman'] ?></td>
-            <td><?= $p['nama_anggota'] ?? '-' ?></td>
-            <td><?= $p['tanggal_pinjam'] ?? '-' ?></td>
-            <td><?= $p['tanggal_dikembalikan'] ?></td>
+                    <thead class="table-light text-center">
+                        <tr>
+                            <th>ID</th>
+                            <th>Peminjaman</th>
+                            <th>Anggota</th>
+                            <th>Tanggal</th>
+                            <th>Denda</th>
+                            <th>Status</th>
+                            <th>Bayar</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
 
-            <!-- 💰 DENDA -->
-            <td><?= $p['denda'] ?? 0 ?></td>
+                    <tbody>
 
-            <!-- 🔥 STATUS -->
-            <td>
-                <?php if (($p['denda'] ?? 0) > 0): ?>
-                    <span style="color:red; font-weight:bold;">Terlambat</span>
-                <?php else: ?>
-                    <span style="color:green; font-weight:bold;">Tepat Waktu</span>
-                <?php endif; ?>
-            </td>
+                        <?php foreach ($pengembalian as $p): ?>
+                            <tr>
 
-            <!-- 💳 STATUS BAYAR -->
-            <td>
-                <?php if (($p['denda'] ?? 0) == 0): ?>
-                    -
-                <?php else: ?>
-                    <?php if (($p['status_bayar'] ?? 'belum_bayar') == 'lunas'): ?>
-                        <span style="color:green;">Lunas</span>
-                    <?php else: ?>
-                        <span style="color:red;">Belum Bayar</span>
-                    <?php endif; ?>
-                <?php endif; ?>
-            </td>
+                                <td class="text-center">
+                                    <?= $p['id_pengembalian'] ?>
+                                </td>
 
-            <!-- 🔘 AKSI -->
-            <td>
+                                <td>
+                                    <small>
+                                        ID: <?= $p['id_peminjaman'] ?><br>
+                                        <?= $p['tanggal_pinjam'] ?? '-' ?>
+                                    </small>
+                                </td>
 
-                <a href="<?= base_url('pengembalian/detail/' . $p['id_pengembalian']) ?>">Detail</a>
-                <a href="<?= base_url('pengembalian/edit/' . $p['id_pengembalian']) ?>">Edit</a>
-                <a href="<?= base_url('pengembalian/delete/' . $p['id_pengembalian']) ?>"
-                    onclick="return confirm('Hapus data?')">
-                    Hapus
-                </a>
+                                <td>
+                                    <?= $p['nama_anggota'] ?? '-' ?>
+                                </td>
 
-                <?php if (($p['denda'] ?? 0) > 0 && ($p['status_bayar'] ?? 'belum_bayar') == 'belum_bayar'): ?>
-                    <br>
-                    <a href="<?= base_url('pengembalian/bayar/' . $p['id_pengembalian']) ?>"
-                        style="padding:5px 10px; background:blue; color:white; border-radius:5px; display:inline-block; margin-top:5px;">
-                        Bayar Denda
-                    </a>
-                <?php endif; ?>
+                                <td>
+                                    <small>
+                                        Kembali:<br>
+                                        <?= $p['tanggal_dikembalikan'] ?>
+                                    </small>
+                                </td>
 
-            </td>
+                                <!-- DENDA -->
+                                <td>
+                                    <?php if (($p['denda'] ?? 0) > 0): ?>
+                                        <span class="badge bg-danger">
+                                            Rp <?= number_format($p['denda'], 0, ',', '.') ?>
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="badge bg-success">0</span>
+                                    <?php endif; ?>
+                                </td>
 
-        </tr>
-    <?php endforeach; ?>
+                                <!-- STATUS -->
+                                <td class="text-center">
+                                    <?php if (($p['denda'] ?? 0) > 0): ?>
+                                        <span class="badge bg-danger">Terlambat</span>
+                                    <?php else: ?>
+                                        <span class="badge bg-success">Tepat Waktu</span>
+                                    <?php endif; ?>
+                                </td>
 
-</table>
+                                <!-- STATUS BAYAR -->
+                                <td class="text-center">
+                                    <?php if (($p['denda'] ?? 0) == 0): ?>
+                                        <span class="badge bg-secondary">-</span>
+                                    <?php else: ?>
+                                        <?php if (($p['status_bayar'] ?? 'belum_bayar') == 'lunas'): ?>
+                                            <span class="badge bg-success">Lunas</span>
+                                        <?php else: ?>
+                                            <span class="badge bg-danger">Belum</span>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                </td>
+
+                                <!-- AKSI -->
+                                <td>
+                                    <div class="d-flex flex-wrap gap-1">
+
+                                        <!-- DETAIL -->
+                                        <a href="<?= base_url('pengembalian/detail/' . $p['id_pengembalian']) ?>"
+                                            class="btn btn-sm btn-info">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+
+                                        <!-- EDIT -->
+                                        <a href="<?= base_url('pengembalian/edit/' . $p['id_pengembalian']) ?>"
+                                            class="btn btn-sm btn-warning">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+
+                                        <!-- HAPUS -->
+                                        <a href="<?= base_url('pengembalian/delete/' . $p['id_pengembalian']) ?>"
+                                            onclick="return confirm('Hapus data?')"
+                                            class="btn btn-sm btn-danger">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+
+                                        <!-- BAYAR DENDA -->
+                                        <?php if (($p['denda'] ?? 0) > 0 && ($p['status_bayar'] ?? 'belum_bayar') == 'belum_bayar'): ?>
+                                            <a href="<?= base_url('pengembalian/bayar/' . $p['id_pengembalian']) ?>"
+                                                class="btn btn-sm btn-primary">
+                                                💳
+                                            </a>
+                                        <?php endif; ?>
+
+                                    </div>
+                                </td>
+
+                            </tr>
+                        <?php endforeach; ?>
+
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</div>
 
 <?= $this->endSection() ?>
