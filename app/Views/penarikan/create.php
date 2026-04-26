@@ -1,30 +1,12 @@
-<?= $this->extend('layouts/main') ?>
-<?= $this->section('content') ?>
-
-
 <h2>Tambah Penarikan</h2>
 
+<form action="/penarikan/store" method="post">
+    <input type="text" name="id_peminjaman" placeholder="ID Peminjaman"><br>
+    <textarea name="alamat" placeholder="Alamat"></textarea><br>
+    <input type="number" name="biaya" placeholder="Biaya"><br>
+    <input type="text" name="status" value="pending"><br>
+    <input type="date" name="tanggal_ambil"><br>
+    <input type="text" name="petugas_id"><br>
 
-
-<form action="<?= base_url('penarikan/store') ?>" method="post">
-
-    ID Peminjaman <br>
-    <input type="text" name="id_peminjaman"
-        value="<?= $id_peminjaman ?? '' ?>" readonly><br><br>
-
-    Alamat <br>
-    <textarea name="alamat"></textarea><br><br>
-
-    Biaya <br>
-    <input type="text" name="biaya"><br><br>
-
-    Tanggal Ambil <br>
-    <input type="date" name="tanggal_ambil"><br><br>
-
-    Petugas ID <br>
-    <input type="text" name="petugas_id"><br><br>
-
-    <button type="submit">Simpan Penarikan</button>
-
+    <button type="submit">Simpan</button>
 </form>
-<?= $this->endSection() ?>

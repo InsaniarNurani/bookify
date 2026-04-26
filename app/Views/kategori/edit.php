@@ -1,3 +1,5 @@
+<?= $this->extend('layouts/main') ?>
+<?= $this->section('content') ?>
 <h2>Edit Kategori</h2>
 
 <form method="post" action="<?= base_url('kategori/update/' . $kategori['id_kategori']) ?>">
@@ -9,3 +11,4 @@
     <a href="<?= base_url('kategori') ?>">Kembali</a>
 
 </form>
+<?= $this->endSection() ?>

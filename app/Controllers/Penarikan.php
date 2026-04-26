@@ -6,70 +6,163 @@ use App\Models\PenarikanModel;
 
 class Penarikan extends BaseController
 {
-    protected $penarikan;
+    protected $penarikanModel;
 
     public function __construct()
     {
-        $this->penarikan = new PenarikanModel();
+        $this->penarikanModel = new PenarikanModel();
     }
 
-    // 🔍 READ + SEARCH
+    // ================= LIST + SEARCH =================
     public function index()
     {
         $keyword = $this->request->getGet('keyword');
 
+        $builder = $this->penarikanModel
+            ->select('tb_penarikan.*, users.nama AS nama_anggota, peminjaman.alamat AS alamat_pengiriman')
+            ->join('peminjaman', 'peminjaman.id_peminjaman = tb_penarikan.id_peminjaman', 'left')
+            ->join('anggota', 'anggota.id_anggota = peminjaman.id_anggota', 'left')
+            ->join('users', 'users.id = anggota.user_id', 'left');
+
         if ($keyword) {
-            $data['penarikan'] = $this->penarikan
-                ->select('penarikan.*, anggota.nama as nama_anggota')
-                ->join('peminjaman', 'peminjaman.id_peminjaman = penarikan.id_peminjaman')
-                ->join('anggota', 'anggota.id_anggota = peminjaman.id_anggota')
-                ->like('anggota.nama', $keyword)
-                ->orLike('penarikan.status', $keyword)
-                ->findAll();
-        } else {
-            $data['penarikan'] = $this->penarikan->getPenarikan();
+            $builder->groupStart()
+                ->like('tb_penarikan.id_penarikan', $keyword)
+                ->orLike('users.nama', $keyword)
+                ->orLike('tb_penarikan.status', $keyword)
+                ->groupEnd();
         }
 
-        return view('penarikan/index', $data);
+        return view('penarikan/index', [
+            'penarikan' => $builder->findAll()
+        ]);
     }
 
-    // ➕ CREATE FORM
-    public function create($id_peminjaman = null)
+    // ================= CREATE =================
+    public function create()
     {
-        $data['id_peminjaman'] = $id_peminjaman;
-        return view('penarikan/create', $data);
+        return view('penarikan/create');
     }
-    public function detail($id)
-    {
-        $data['penarikan'] = $this->penarikan->getDetail($id);
-        return view('penarikan/detail', $data);
-    }
-    // 💾 INSERT DATA
+
+    // ================= STORE =================
     public function store()
     {
-        $this->penarikan->insert([
-            'id_peminjaman' => $this->request->getPost('id_peminjaman'),
-            'alamat'        => $this->request->getPost('alamat'),
-            'biaya'         => $this->request->getPost('biaya'),
-            'status'        => 'menunggu',
-            'tanggal_ambil' => $this->request->getPost('tanggal_ambil'),
-            'petugas_id'    => $this->request->getPost('petugas_id'),
+        $id_peminjaman = $this->request->getPost('id_peminjaman');
+
+        $this->penarikanModel->insert([
+            'id_peminjaman' => $id_peminjaman,
+            'alamat'        => $this->request->getPost('alamat'), // FIX
+            'biaya'         => 0,
+            'status'        => 'diajukan',
+            'tanggal_ambil' => null,
+            'petugas_id'    => null
+        ]);
+
+        return redirect()->to('/penarikan')->with('success', 'Penarikan berhasil dibuat');
+    }
+
+    // ================= AJUKAN =================
+    public function ajukan($id)
+    {
+        $cek = $this->penarikanModel->where('id_peminjaman', $id)->first();
+
+        if ($cek) {
+            return redirect()->to('/penarikan')->with('error', 'Sudah diajukan');
+        }
+
+        $this->penarikanModel->insert([
+            'id_peminjaman' => $id,
+            'alamat'        => '-', // sementara
+            'biaya'         => 0,
+            'status'        => 'diajukan'
+        ]);
+
+        return redirect()->to('/penarikan')->with('success', 'Berhasil diajukan');
+    }
+
+    // ================= KONFIRMASI =================
+    public function konfirmasi($id)
+    {
+        $this->penarikanModel->update($id, [
+            'status' => 'menunggu_pembayaran',
+            'biaya'  => 10000
         ]);
 
         return redirect()->to('/penarikan');
     }
 
-    // ✏️ EDIT FORM
-    public function edit($id)
+    // ================= DETAIL =================
+    public function detail($id)
     {
-        $data['penarikan'] = $this->penarikan->find($id);
-        return view('penarikan/edit', $data);
+        $data = $this->penarikanModel
+            ->select('tb_penarikan.*, users.nama AS nama_anggota')
+            ->join('peminjaman', 'peminjaman.id_peminjaman = tb_penarikan.id_peminjaman', 'left')
+            ->join('anggota', 'anggota.id_anggota = peminjaman.id_anggota', 'left')
+            ->join('users', 'users.id = anggota.user_id', 'left')
+            ->find($id);
+
+        if (!$data) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('Data tidak ditemukan');
+        }
+
+        return view('penarikan/detail', [
+            'penarikan' => $data
+        ]);
     }
 
-    // 🔄 UPDATE DATA
+    // ================= BAYAR =================
+    public function bayar($id)
+    {
+        return view('penarikan/bayar', [
+            'penarikan' => $this->penarikanModel->find($id)
+        ]);
+    }
+
+    public function prosesBayar($id)
+    {
+        $this->penarikanModel->update($id, [
+            'status' => 'sudah_bayar'
+        ]);
+
+        return redirect()->to('/penarikan');
+    }
+
+    // ================= AMBIL =================
+    public function ambil($id)
+    {
+        $this->penarikanModel->update($id, [
+            'status' => 'diambil',
+            'tanggal_ambil' => date('Y-m-d')
+        ]);
+
+        return redirect()->to('/penarikan');
+    }
+
+    // ================= SELESAI =================
+    public function selesai($id)
+    {
+        $this->penarikanModel->update($id, [
+            'status' => 'selesai'
+        ]);
+
+        return redirect()->to('/penarikan');
+    }
+
+    // ================= EDIT =================
+    public function edit($id)
+    {
+        $data = $this->penarikanModel->find($id);
+
+        if (!$data) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('Data tidak ditemukan');
+        }
+
+        return view('penarikan/edit', ['penarikan' => $data]);
+    }
+
+    // ================= UPDATE =================
     public function update($id)
     {
-        $this->penarikan->update($id, [
+        $this->penarikanModel->update($id, [
             'id_peminjaman' => $this->request->getPost('id_peminjaman'),
             'alamat'        => $this->request->getPost('alamat'),
             'biaya'         => $this->request->getPost('biaya'),
@@ -80,63 +173,12 @@ class Penarikan extends BaseController
 
         return redirect()->to('/penarikan');
     }
-    public function ajukan($id_peminjaman)
-    {
-        // contoh biaya otomatis (bisa kamu ubah logicnya)
-        $biaya = 10000;
 
-        // CEK BIAR TIDAK DOBEL
-        $cek = $this->penarikan
-            ->where('id_peminjaman', $id_peminjaman)
-            ->first();
-
-        if ($cek) {
-            return redirect()->back()->with('error', 'Sudah pernah diajukan');
-        }
-
-        $this->penarikan->insert([
-            'id_peminjaman' => $id_peminjaman,
-            'alamat'        => null, // kalau mau ambil dari anggota bisa diisi nanti
-            'biaya'         => $biaya,
-            'status'        => 'menunggu',
-            'tanggal_ambil' => null,
-            'petugas_id'    => null
-        ]);
-
-        return redirect()->to('/peminjaman')
-            ->with('success', 'Penarikan berhasil diajukan');
-    }
-    public function konfirmasi($id)
-    {
-        $this->penarikan->update($id, [
-            'status' => 'diproses',
-            'petugas_id' => session()->get('id')
-        ]);
-
-        return redirect()->to('/penarikan');
-    }
-    public function diambil($id)
-    {
-        $this->penarikan->update($id, [
-            'status' => 'diambil',
-            'tanggal_ambil' => date('Y-m-d') // 🔥 otomatis sekarang
-        ]);
-
-        return redirect()->to('/penarikan');
-    }
-
-    public function selesai($id)
-    {
-        $this->penarikan->update($id, [
-            'status' => 'selesai'
-        ]);
-
-        return redirect()->to('/penarikan');
-    }
-    // ❌ DELETE
+    // ================= DELETE =================
     public function delete($id)
     {
-        $this->penarikan->delete($id);
+        $this->penarikanModel->delete($id);
+
         return redirect()->to('/penarikan');
     }
 }

@@ -25,7 +25,7 @@
                 <option value="ambil">Ambil di Perpustakaan</option>
                 <option value="diantar">Diantar ke Rumah</option>
             </select>
-
+            <input type="text" name="alamat" class="form-control" required>
             <div id="alamatBox" style="display:none; margin-top:10px;">
                 <p>Alamat:</p>
                 <textarea name="alamat"></textarea>

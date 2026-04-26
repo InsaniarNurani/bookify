@@ -21,7 +21,7 @@ class Pengembalian extends BaseController
     // ======================
     public function index()
     {
-        $model = new \App\Models\PengembalianModel();
+        $model = $this->pengembalianModel;
 
         $data['pengembalian'] = $model
             ->select('pengembalian.*, peminjaman.tanggal_pinjam,
@@ -35,11 +35,15 @@ class Pengembalian extends BaseController
     }
 
     // ======================
-    // STORE (AUTO DENDA + STATUS)
+    // STORE
     // ======================
     public function store()
     {
         $idPeminjaman = $this->request->getPost('id_peminjaman');
+
+        if (!$idPeminjaman) {
+            return redirect()->back()->with('error', 'ID peminjaman tidak valid');
+        }
 
         $peminjaman = $this->peminjamanModel->find($idPeminjaman);
 
@@ -47,26 +51,21 @@ class Pengembalian extends BaseController
             return redirect()->back()->with('error', 'Data peminjaman tidak ditemukan');
         }
 
-        // 🔥 AMANKAN FORMAT TANGGAL
         $tanggalDikembalikan = date('Y-m-d');
-        $jatuhTempo = date('Y-m-d', strtotime($peminjaman['tanggal_kembali']));
+        $jatuhTempo = $peminjaman['tanggal_kembali'];
 
-        // 🔥 HITUNG SELISIH
         $selisihHari = (strtotime($tanggalDikembalikan) - strtotime($jatuhTempo)) / 86400;
 
-        // 🔥 DEFAULT
         $denda = 0;
         $statusPengembalian = 'tepat_waktu';
         $statusBayar = null;
 
-        // 🔥 JIKA TERLAMBAT
         if ($selisihHari > 0) {
             $denda = $selisihHari * 1000;
             $statusPengembalian = 'terlambat';
             $statusBayar = 'belum_bayar';
         }
 
-        // 🔥 SIMPAN
         $this->pengembalianModel->save([
             'id_peminjaman' => $idPeminjaman,
             'tanggal_dikembalikan' => $tanggalDikembalikan,
@@ -79,21 +78,28 @@ class Pengembalian extends BaseController
     }
 
     // ======================
-    // BAYAR DENDA
+    // BAYAR
     // ======================
     public function bayar($id)
     {
-        $builder = $this->pengembalianModel->builder();
+        if (!$id) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('ID tidak valid');
+        }
 
-        $builder->select('pengembalian.*, users.nama as nama_anggota')
+        $data['pengembalian'] = $this->pengembalianModel
+            ->select('pengembalian.*, users.nama as nama_anggota')
             ->join('peminjaman', 'peminjaman.id_peminjaman = pengembalian.id_peminjaman')
             ->join('users', 'users.id = peminjaman.id_anggota')
-            ->where('pengembalian.id_pengembalian', $id);
+            ->where('pengembalian.id_pengembalian', $id)
+            ->first();
 
-        $data['pengembalian'] = $builder->get()->getRowArray();
+        if (!$data['pengembalian']) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('Data pengembalian tidak ditemukan');
+        }
 
         return view('pengembalian/pembayaran', $data);
     }
+
     public function prosesBayar($id)
     {
         $metode = $this->request->getPost('metode');
@@ -102,7 +108,7 @@ class Pengembalian extends BaseController
         $bukti = null;
 
         if ($metode == 'transfer') {
-            if ($file && $file->isValid()) {
+            if ($file && $file->isValid() && !$file->hasMoved()) {
                 $bukti = $file->getRandomName();
                 $file->move('uploads/bukti', $bukti);
             } else {
@@ -118,29 +124,34 @@ class Pengembalian extends BaseController
 
         return redirect()->to('/pengembalian')->with('success', 'Pembayaran berhasil');
     }
+
     // ======================
-    // DETAIL
+    // DETAIL (FIX TOTAL AMAN)
     // ======================
     public function detail($id)
     {
-        // 🔥 ambil data utama + join
-        $builder = $this->pengembalianModel->builder();
+        if (!$id) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('ID tidak valid');
+        }
 
-        $builder->select('
-        pengembalian.*,
-        peminjaman.tanggal_pinjam,
-        peminjaman.tanggal_kembali,
-        peminjaman.metode_pengantaran,
-        peminjaman.alamat,
-        users.nama as nama_anggota
-    ')
+        $data['pengembalian'] = $this->pengembalianModel
+            ->select('
+                pengembalian.*,
+                peminjaman.tanggal_pinjam,
+                peminjaman.tanggal_kembali,
+                peminjaman.metode_pengantaran,
+                peminjaman.alamat,
+                users.nama as nama_anggota
+            ')
             ->join('peminjaman', 'peminjaman.id_peminjaman = pengembalian.id_peminjaman')
             ->join('users', 'users.id = peminjaman.id_anggota')
-            ->where('pengembalian.id_pengembalian', $id);
+            ->where('pengembalian.id_pengembalian', $id)
+            ->first();
 
-        $data['pengembalian'] = $builder->get()->getRowArray();
+        if (!$data['pengembalian']) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('Data pengembalian tidak ditemukan');
+        }
 
-        // 🔥 ambil detail buku
         $detailModel = new \App\Models\DetailPeminjamanModel();
 
         $data['buku'] = $detailModel
@@ -151,8 +162,9 @@ class Pengembalian extends BaseController
 
         return view('pengembalian/detail', $data);
     }
+
     // ======================
-    // UPDATE (TANPA DENDA MANUAL)
+    // UPDATE
     // ======================
     public function update($id)
     {

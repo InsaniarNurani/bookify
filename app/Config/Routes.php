@@ -20,19 +20,17 @@ $routes->get('logout', 'Auth::logout');
 $routes->get('/', 'Home::index', $authFilter);
 $routes->get('dashboard', 'Home::index', $authFilter);
 
-// ================== USERS ==================
-$routes->group('users', function ($routes) use ($intRole, $allRole) {
-    $routes->get('/', 'Users::index', $intRole);
-    $routes->get('create', 'Users::create');
-    $routes->post('store', 'Users::store');
-    $routes->get('users/edit/(:num)', 'Users::edit/$1', $allRole);
-    $routes->post('update/(:num)', 'Users::update/$1', $allRole);
-    $routes->get('delete/(:num)', 'Users::delete/$1', $allRole);
-    $routes->get('detail/(:num)', 'Users::detail/$1', $allRole);
-    $routes->get('print', 'Users::print', $allRole);
-    $routes->get('wa/(:num)', 'Users::wa/$1', $allRole);
-});
-//
+//--modul user--
+$routes->get('/users/create', 'Users::create'); // form tambah user
+$routes->post('/users/store', 'Users::store'); // aksi simpan user
+$routes->get('/users', 'Users::index', $intRole); // menampilkan data user hanya untuk admin dan petugas
+$routes->get('/users/edit/(:num)', 'Users::edit/$1', $allRole);
+$routes->post('/users/update/(:num)', 'Users::update/$1', $allRole); // aksi update user
+$routes->get('/users/delete/(:num)', 'Users::delete/$1', $allRole); // aksi hapus user
+$routes->get('users/detail/(:num)', 'Users::detail/$1', $allRole); // aksi detail user
+$routes->get('users/print', 'Users::print', $allRole); // aksi print data user
+$routes->get('users/wa/(:num)', 'Users::wa/$1', $allRole); // aksi kirim ke whatsapp
+
 
 // --- Modul: Buku ---
 $routes->group('buku', function ($routes) {
@@ -174,22 +172,18 @@ $routes->group('transaksi', function ($routes) {
 $routes->get('pengembalian/bayar/(:num)', 'Pengembalian::bayar/$1');
 $routes->post('pengembalian/prosesBayar/(:num)', 'Pengembalian::prosesBayar/$1');
 
-$routes->get('penarikan', 'Penarikan::index');
-$routes->get('penarikan/create', 'Penarikan::create');
-$routes->post('penarikan/store', 'Penarikan::store');
-
-$routes->get('penarikan/edit/(:num)', 'Penarikan::edit/$1');
-$routes->post('penarikan/update/(:num)', 'Penarikan::update/$1');
-
-$routes->get('penarikan/delete/(:num)', 'Penarikan::delete/$1');
-
-
-$routes->get('penarikan/create/(:num)', 'Penarikan::create/$1');
-$routes->post('penarikan/store', 'Penarikan::store');
+$routes->get('/penarikan', 'Penarikan::index');
+$routes->get('/penarikan/create', 'Penarikan::create');
+$routes->post('/penarikan/store', 'Penarikan::store');
+$routes->get('/penarikan/edit/(:num)', 'Penarikan::edit/$1');
+$routes->post('/penarikan/update/(:num)', 'Penarikan::update/$1');
+$routes->get('/penarikan/delete/(:num)', 'Penarikan::delete/$1');
 $routes->get('penarikan/ajukan/(:num)', 'Penarikan::ajukan/$1');
+$routes->get('peminjaman/ajukan/(:num)', 'Peminjaman::ajukan/$1');
 $routes->get('penarikan/konfirmasi/(:num)', 'Penarikan::konfirmasi/$1');
-$routes->get('penarikan/diambil/(:num)', 'Penarikan::diambil/$1');
+$routes->get('penarikan/konfirmasi/(:num)', 'Penarikan::konfirmasi/$1');
+$routes->get('penarikan/bayar/(:num)', 'Penarikan::bayar/$1');
+$routes->post('penarikan/prosesBayar/(:num)', 'Penarikan::prosesBayar/$1');
+$routes->get('penarikan/ambil/(:num)', 'Penarikan::ambil/$1');
 $routes->get('penarikan/selesai/(:num)', 'Penarikan::selesai/$1');
 $routes->get('penarikan/detail/(:num)', 'Penarikan::detail/$1');
-$routes->get('penarikan/pembayaran/(:num)', 'Penarikan::pembayaran/$1');
-$routes->post('penarikan/prosesBayar/(:num)', 'Penarikan::prosesBayar/$1');

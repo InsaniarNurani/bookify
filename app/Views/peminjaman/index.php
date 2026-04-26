@@ -126,11 +126,6 @@
 
                         <?php endif; ?>
 
-
-
-
-
-
                     <?php endif; ?>
 
                     <?php if ($p['status'] == 'terlambat'): ?>
@@ -159,12 +154,10 @@
             <td>
 
                 <?php if (session()->get('role') == 'anggota' && ($p['metode_pengantaran'] ?? '') != 'ambil'): ?>
-
-                    <a href="<?= base_url('penarikan/ajukan/' . $p['id_peminjaman']) ?>"
+                    <a href="<?= base_url('peminjaman/ajukan/' . $p['id_peminjaman']) ?>"
                         onclick="return confirm('Ajukan penarikan?')">
                         🚚 Ajukan Penarikan
                     </a>
-
                 <?php endif; ?>
             </td>
             </td>

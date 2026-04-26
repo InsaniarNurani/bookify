@@ -11,11 +11,11 @@
            Users
        </a><br>
    <?php endif; ?>
-   <?php $idu = session('id'); ?>
-   <a href="<?= base_url('users/edit/' . $idu) ?>">
-       Setting
-   </a><br>
 
+   <?php if (session()->get('role') != 'admin') : ?>
+       <a href="<?= base_url('kategori') ?>">Data Kategori</a>
+       </a><br>
+   <?php endif; ?>
    <?php if (session()->get('role') != 'anggota') : ?>
        <a href="<?= base_url('buku') ?>">Data Buku</a>
        </a><br>

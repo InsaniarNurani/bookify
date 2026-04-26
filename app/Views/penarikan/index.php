@@ -3,13 +3,6 @@
 
 <h2>Data Penarikan</h2>
 
-<form method="get">
-    <input type="text" name="keyword" placeholder="Cari nama / status">
-    <button type="submit">Cari</button>
-</form>
-
-<br>
-
 <table border="1" cellpadding="10">
     <tr>
         <th>ID</th>
@@ -21,109 +14,82 @@
         <th>Aksi</th>
     </tr>
 
-    <?php if (!empty($penarikan)): ?>
-        <?php foreach ($penarikan as $p): ?>
-            <tr>
-                <td><?= $p['id_penarikan'] ?></td>
+    <?php foreach ($penarikan as $p): ?>
+        <tr>
+            <td><?= $p['id_penarikan'] ?></td>
+            <td><?= $p['nama_anggota'] ?></td>
+            <td><?= $p['alamat'] ?></td>
+            <td><?= $p['biaya'] ?></td>
+            <td><?= $p['status'] ?></td>
+            <td><?= $p['tanggal_ambil'] ?></td>
 
-                <!-- 🔥 INI SUDAH NAMA ANGGOTA -->
-                <td><?= $p['nama_anggota'] ?></td>
+            <td>
 
-                <td><?= $p['alamat'] ?></td>
-                <td><?= number_format($p['biaya'], 0, ',', '.') ?></td>
-                <td><?= $p['status'] ?></td>
+                <!-- ================= DIAJUKAN ================= -->
+                <?php if ($p['status'] == 'diajukan'): ?>
 
-                <td>
-                    <?= $p['tanggal_ambil'] ? date('d-m-Y H:i', strtotime($p['tanggal_ambil'])) : '-' ?>
-                </td>
-
-                <td>
-                <td>
-
-                <td>
-
-                    <!-- =========================
-         1. KONFIRMASI (PETUGAS)
-         status: menunggu
-    ========================== -->
-                    <?php if (session()->get('role') == 'petugas' && $p['status'] == 'menunggu'): ?>
-                        <a href="<?= base_url('penarikan/konfirmasi/' . $p['id_penarikan']) ?>"
-                            style="padding:4px 8px;background:orange;color:white;border-radius:5px;text-decoration:none;">
+                    <?php if (session()->get('role') == 'petugas'): ?>
+                        <a href="<?= base_url('penarikan/konfirmasi/' . $p['id_penarikan']) ?>">
                             ✔ Konfirmasi
                         </a>
+                    <?php else: ?>
+                        Menunggu Konfirmasi
                     <?php endif; ?>
 
 
-                    <!-- =========================
-         2. PEMBAYARAN (ANGGOTA)
-         status: menunggu_pembayaran
-    ========================== -->
-                    <?php if (session()->get('role') == 'anggota' && $p['status'] == 'menunggu_pembayaran'): ?>
-                        <a href="<?= base_url('penarikan/pembayaran/' . $p['id_penarikan']) ?>"
-                            style="padding:4px 8px;background:blue;color:white;border-radius:5px;text-decoration:none;">
+                    <!-- ================= MENUNGGU PEMBAYARAN ================= -->
+                <?php elseif ($p['status'] == 'menunggu_pembayaran'): ?>
+
+                    <?php if (session()->get('role') == 'anggota'): ?>
+                        <a href="<?= base_url('penarikan/bayar/' . $p['id_penarikan']) ?>">
                             💳 Bayar
                         </a>
+                    <?php else: ?>
+                        Menunggu Pembayaran
                     <?php endif; ?>
 
 
-                    <!-- =========================
-         3. DIPROSES -> DIAMBIL (PETUGAS)
-         status: diproses
-    ========================== -->
-                    <?php if (session()->get('role') == 'petugas' && $p['status'] == 'diproses'): ?>
-                        <a href="<?= base_url('penarikan/diambil/' . $p['id_penarikan']) ?>"
-                            style="padding:4px 8px;background:green;color:white;border-radius:5px;text-decoration:none;">
-                            🚚 Diambil
-                        </a>
-                    <?php endif; ?>
+                    <!-- ================= SUDAH BAYAR ================= -->
+                <?php elseif ($p['status'] == 'sudah_bayar'): ?>
 
-
-                    <!-- =========================
-         4. SELESAI (PETUGAS)
-         status: diambil
-    ========================== -->
-                    <?php if (session()->get('role') == 'petugas' && $p['status'] == 'diambil'): ?>
-                        <a href="<?= base_url('penarikan/selesai/' . $p['id_penarikan']) ?>"
-                            style="padding:4px 8px;background:gray;color:white;border-radius:5px;text-decoration:none;">
-                            📦 Selesai
-                        </a>
-                    <?php endif; ?>
-
-                    <!-- DETAIL (PETUGAS SAJA) -->
                     <?php if (session()->get('role') == 'petugas'): ?>
-                        <a href="<?= base_url('penarikan/detail/' . $p['id_penarikan']) ?>"
-                            style="padding:4px 8px;background:#555;color:white;border-radius:5px;text-decoration:none;">
-                            🔍 Detail
+                        <a href="<?= base_url('penarikan/ambil/' . $p['id_penarikan']) ?>">
+                            🚚 Ambil
                         </a>
+                    <?php else: ?>
+                        Sudah Dibayar
                     <?php endif; ?>
 
 
-                    <!-- HAPUS (PETUGAS SAJA) -->
+                    <!-- ================= DIAMBIL ================= -->
+                <?php elseif ($p['status'] == 'diambil'): ?>
+
                     <?php if (session()->get('role') == 'petugas'): ?>
-                        <a href="<?= base_url('penarikan/delete/' . $p['id_penarikan']) ?>"
-                            onclick="return confirm('Yakin ingin hapus data ini?')"
-                            style="padding:4px 8px;background:red;color:white;border-radius:5px;text-decoration:none;">
-                            🗑 Hapus
+                        <a href="<?= base_url('penarikan/selesai/' . $p['id_penarikan']) ?>">
+                            ✔ Selesai
                         </a>
-                    <?php endif; ?>
-                    <!-- =========================
-         INFO STATUS TAMBAHAN
-    ========================== -->
-                    <?php if ($p['status'] == 'selesai'): ?>
-                        <span style="color:green;font-weight:bold;">✔ Selesai</span>
+                    <?php else: ?>
+                        Dalam Proses Pengambilan
                     <?php endif; ?>
 
-                </td>
 
-                </td>
-                </td>
-            </tr>
-        <?php endforeach; ?>
-    <?php else: ?>
-        <tr>
-            <td colspan="7">Data kosong</td>
+                    <!-- ================= SELESAI ================= -->
+                <?php elseif ($p['status'] == 'selesai'): ?>
+                    ✔ Selesai
+                <?php endif; ?>
+
+                |<a href="<?= base_url('penarikan/detail/' . $p['id_penarikan']) ?>">
+                    Detail
+                </a>
+                <a href="<?= base_url('penarikan/delete/' . $p['id_penarikan']) ?>"
+                    onclick="return confirm('Hapus data?')">
+                    Hapus
+                </a>
+
+            </td>
         </tr>
-    <?php endif; ?>
+    <?php endforeach; ?>
+
 </table>
 
 <?= $this->endSection() ?>
