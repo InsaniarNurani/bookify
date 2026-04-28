@@ -55,7 +55,7 @@
 
                             <!-- FIX: hanya 1 alamat (yang benar) -->
                             <div id="alamatBox">
-                                <label class="form-label">Alamat Lengkap</label>
+
                                 <textarea name="alamat" class="form-control" placeholder="Alamat lengkap"></textarea>
                             </div>
 
