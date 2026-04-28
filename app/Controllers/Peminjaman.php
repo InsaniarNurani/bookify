@@ -45,7 +45,15 @@ class Peminjaman extends BaseController
             'peminjaman' => $peminjaman
         ]);
     }
+    public function selesai($id)
+    {
+        $this->peminjaman->update($id, [
+            'status_pengiriman' => 'selesai'
+        ]);
 
+        return redirect()->to('/peminjaman')
+            ->with('success', 'Pengiriman selesai');
+    }
     // ================= DETAIL =================
     public function detail($id)
     {
@@ -99,14 +107,6 @@ class Peminjaman extends BaseController
         $tanggalKembali = date('Y-m-d', strtotime('+7 days'));
 
         $metode = $this->request->getPost('metode_pengantaran');
-
-        // 🔥 FIX ALAMAT (INI PENYEBAB ERROR KAMU)
-        $alamat = ($metode == 'diantar')
-            ? $this->request->getPost('alamat')
-            : '-';
-
-        $ongkir = ($metode == 'diantar') ? 10000 : 0;
-
         $bukuDipilih = $this->request->getPost('id_buku');
 
         // VALIDASI BUKU
@@ -118,19 +118,31 @@ class Peminjaman extends BaseController
             return redirect()->back()->with('error', 'Maksimal 2 buku');
         }
 
+        // ALAMAT FIX (TIDAK DUPLIKAT)
+        $alamat = ($metode == 'diantar')
+            ? $this->request->getPost('alamat')
+            : '-';
+
+        if ($metode == 'diantar' && empty($alamat)) {
+            return redirect()->back()->with('error', 'Alamat wajib diisi untuk pengantaran');
+        }
+
+        $ongkir = ($metode == 'diantar') ? 10000 : 0;
+
         // CEK STOK
         foreach ($bukuDipilih as $idBuku) {
             $b = $this->buku->find($idBuku);
 
             if (!$b || $b['tersedia'] <= 0) {
-                return redirect()->back()->with('error', 'Stok buku "' . ($b['judul'] ?? '') . '" habis');
+                return redirect()->back()
+                    ->with('error', 'Stok buku "' . ($b['judul'] ?? '') . '" habis');
             }
         }
 
         // SIMPAN PEMINJAMAN
         $this->peminjaman->insert([
             'id_anggota' => $idAnggota,
-            'id_petugas' => $this->request->getPost('id_petugas'),
+            'id_petugas' => null,
             'tanggal_pinjam' => $tanggalPinjam,
             'tanggal_kembali' => $tanggalKembali,
             'status' => 'dipinjam',
@@ -142,7 +154,7 @@ class Peminjaman extends BaseController
 
         $idPeminjaman = $this->peminjaman->insertID();
 
-        // SIMPAN DETAIL + KURANGI STOK
+        // DETAIL + STOK
         foreach ($bukuDipilih as $idBuku) {
 
             $this->detail->insert([
@@ -155,23 +167,10 @@ class Peminjaman extends BaseController
                 ->where('id_buku', $idBuku)
                 ->update();
         }
-        $metode = $this->request->getPost('metode_pengantaran');
 
-        // 🔥 TARUH DI SINI
-        $alamat = $this->request->getPost('alamat');
-
-        if ($metode == 'diantar' && empty($alamat)) {
-            return redirect()->back()->with('error', 'Alamat wajib diisi untuk pengantaran');
-        }
-
-        if ($metode == 'ambil') {
-            $alamat = '-';
-        }
-
-        $ongkir = ($metode == 'diantar') ? 10000 : 0;
-        return redirect()->to('/peminjaman')->with('success', 'Peminjaman berhasil');
+        return redirect()->to('/peminjaman')
+            ->with('success', 'Peminjaman berhasil');
     }
-
     public function perpanjang($id)
     {
         $p = $this->peminjaman->find($id);
@@ -255,16 +254,9 @@ class Peminjaman extends BaseController
 
     public function pembayaran($id)
     {
-        $peminjaman = $this->peminjaman->find($id);
+        $data['pinjam'] = $this->peminjaman->find($id);
 
-        if (!$peminjaman) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Data tidak ditemukan');
-        }
-
-        return view('peminjaman/pembayaran', [
-            'id' => $id,
-            'peminjaman' => $peminjaman
-        ]);
+        return view('peminjaman/pembayaran', $data);
     }
 
     public function bayar($id)

@@ -187,4 +187,8 @@ $routes->post('penarikan/prosesBayar/(:num)', 'Penarikan::prosesBayar/$1');
 $routes->get('penarikan/ambil/(:num)', 'Penarikan::ambil/$1');
 $routes->get('penarikan/selesai/(:num)', 'Penarikan::selesai/$1');
 $routes->get('penarikan/detail/(:num)', 'Penarikan::detail/$1');
-$routes->get('/', 'Dashboard::index');
+
+//dashboard
+$routes->get('dashboard', 'Dashboard::index');
+
+$routes->get('profile', 'Profile::index');

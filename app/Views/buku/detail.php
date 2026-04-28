@@ -125,10 +125,19 @@
 
         <!-- FOOTER BUTTON -->
         <div class="card-footer d-flex gap-2">
+            <div class="mt-3">
 
-            <a href="<?= base_url('buku') ?>" class="btn btn-secondary">
-                <i class="bi bi-arrow-left"></i> Kembali
-            </a>
+                <a href="<?= base_url('/') ?>" class="btn btn-secondary">
+                    Kembali ke Dashboard
+                </a>
+
+                <?php if (session()->get('role') == 'admin' || session()->get('role') == 'petugas') : ?>
+                    <a href="<?= base_url('buku') ?>" class="btn btn-primary">
+                        Kembali ke Data Buku
+                    </a>
+                <?php endif; ?>
+
+            </div>
 
             <a href="<?= base_url('buku/wa/' . $buku['id_buku']) ?>"
                 target="_blank"

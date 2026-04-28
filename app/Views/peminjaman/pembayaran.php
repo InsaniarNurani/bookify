@@ -35,7 +35,7 @@
     </div>
 
     <!-- FORM -->
-    <form method="post" action="<?= base_url('peminjaman/bayar/' . $id) ?>" enctype="multipart/form-data">
+    <form method="post" action="<?= base_url('peminjaman/bayar/' . $pinjam['id_peminjaman']) ?>" enctype="multipart/form-data">
 
         <div class="card shadow-sm">
             <div class="card-body">

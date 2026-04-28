@@ -20,17 +20,24 @@ class Transaksi extends BaseController
     {
         $keyword = $this->request->getGet('keyword');
 
+        $role = session()->get('role');
+        $userId = session()->get('id_user');
+
         $builder = $this->transaksiModel->builder();
 
         $builder->select('
-            transaksi.*,
-            peminjaman.metode_pengantaran,
-            peminjaman.ongkir,
-            users.nama as nama_anggota
-        ')
+        transaksi.*,
+        peminjaman.metode_pengantaran,
+        peminjaman.ongkir,
+        users.nama as nama_anggota
+    ')
             ->join('peminjaman', 'peminjaman.id_peminjaman = transaksi.id_peminjaman')
             ->join('users', 'users.id = peminjaman.id_anggota');
-        // kalau di peminjaman namanya user_id, ganti sesuai field kamu
+
+        // 🔥 INI LOGIKA ROLE
+        if ($role == 'anggota') {
+            $builder->where('peminjaman.id_anggota', $userId);
+        }
 
         if ($keyword) {
             $builder->groupStart()

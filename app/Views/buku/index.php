@@ -117,11 +117,6 @@
                                         <i class="bi bi-trash"></i>
                                     </a>
 
-                                    <a href="<?= base_url('buku/wa/' . $b['id_buku']) ?>"
-                                        target="_blank"
-                                        class="btn btn-success">
-                                        <i class="bi bi-whatsapp"></i>
-                                    </a>
 
                                 </div>
                             </td>

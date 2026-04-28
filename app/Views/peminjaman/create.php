@@ -53,12 +53,10 @@
                                 <option value="diantar">Diantar ke Rumah</option>
                             </select>
 
-                            <!-- tetap dipertahankan -->
-                            <input type="text" name="alamat" class="form-control mb-2" placeholder="Alamat">
-
-                            <div id="alamatBox" style="display:none;">
+                            <!-- FIX: hanya 1 alamat (yang benar) -->
+                            <div id="alamatBox">
                                 <label class="form-label">Alamat Lengkap</label>
-                                <textarea name="alamat" class="form-control"></textarea>
+                                <textarea name="alamat" class="form-control" placeholder="Alamat lengkap"></textarea>
                             </div>
 
                         </div>
@@ -91,6 +89,7 @@
                                 <img src="<?= base_url('uploads/buku/' . $b['cover']) ?>"
                                     class="img-fluid rounded mb-1"
                                     style="height:100px; object-fit:cover;"
+                                    loading="lazy"
                                     onerror="this.src='<?= base_url('assets/no-image.png') ?>'">
 
                                 <!-- judul -->
@@ -151,7 +150,7 @@
     }
 </style>
 
-<!-- SCRIPT (LOGIC TETAP) -->
+<!-- SCRIPT -->
 <script>
     const metode = document.getElementById('metode');
     const alamatBox = document.getElementById('alamatBox');

@@ -4,49 +4,106 @@ namespace App\Controllers;
 
 use App\Models\UsersModel;
 use CodeIgniter\Controller;
+use Config\Database;
 
 class Auth extends Controller
 {
-    // Menampilkan halaman view/auth/login
     public function login()
     {
         return view('auth/login');
     }
 
-    // Memproses data login yang diinput pada halaman login
     public function prosesLogin()
     {
         $session = session();
         $usersModel = new UsersModel();
+        $db = Database::connect();
+
         $username = $this->request->getPost('username');
         $password = $this->request->getPost('password');
 
         $users = $usersModel->getUsersByUsername($username);
 
-        if ($users) {
-            if (password_verify($password, $users['password'])) {
-                $session->set([
-                    'id' => $users['id'],
-                    'nama' => $users['nama'],
-                    'email' => $users['email'],
-                    'username' => $users['username'],
-                    'role' => $users['role'],
-                    'foto' => $users['foto'],
-                    'logged_in' => true
+        // USER TIDAK DITEMUKAN
+        if (!$users) {
+            return redirect()->to('/login')
+                ->with('error', 'Username tidak ditemukan');
+        }
+
+        // PASSWORD SALAH
+        if (!password_verify($password, $users['password'])) {
+            return redirect()->to('/login')
+                ->with('error', 'Password salah');
+        }
+
+        // DATA SESSION DASAR
+        $dataSession = [
+            'id'        => $users['id'],
+            'id_user'   => $users['id'], // tambahan agar bisa dipakai filter anggota
+            'nama'      => $users['nama'],
+            'email'     => $users['email'],
+            'username'  => $users['username'],
+            'role'      => $users['role'],
+            'foto'      => $users['foto'],
+            'logged_in' => true
+        ];
+
+        /*
+        ==================================================
+        KHUSUS ROLE ANGGOTA
+        ==================================================
+        */
+        if ($users['role'] == 'anggota') {
+
+            // cek apakah anggota sudah ada
+            $anggota = $db->table('anggota')
+                ->where('user_id', $users['id'])
+                ->get()
+                ->getRowArray();
+
+            // kalau belum ada, buat otomatis
+            if (!$anggota) {
+
+                $db->table('anggota')->insert([
+                    'user_id' => $users['id']
                 ]);
 
-                return redirect()->to('/dashboard');
-            } else {
-                $session->setFlashdata('salahpw', 'Password salah');
-                return redirect()->to('/login');
+                // ambil ulang data anggota
+                $anggota = $db->table('anggota')
+                    ->where('user_id', $users['id'])
+                    ->get()
+                    ->getRowArray();
             }
-        } else {
-            $session->setFlashdata('error', 'Nama tidak ditemukan');
-            return redirect()->to('/login');
+
+            // simpan id anggota ke session
+            if ($anggota) {
+                $dataSession['id_anggota'] = $anggota['id_anggota'];
+            }
         }
+
+        /*
+        ==================================================
+        KHUSUS ROLE PETUGAS
+        ==================================================
+        */
+        if ($users['role'] == 'petugas') {
+
+            $petugas = $db->table('petugas')
+                ->where('user_id', $users['id'])
+                ->get()
+                ->getRowArray();
+
+            if ($petugas) {
+                $dataSession['id_petugas'] = $petugas['id_petugas'];
+            }
+        }
+
+        // SET SESSION
+        $session->set($dataSession);
+
+        return redirect()->to('/dashboard');
     }
 
-    // Logout (keluar dari aplikasi)
     public function logout()
     {
         session()->destroy();

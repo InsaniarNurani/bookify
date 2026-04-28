@@ -100,11 +100,7 @@
                                             <i class="bi bi-eye"></i>
                                         </a>
 
-                                        <!-- EDIT -->
-                                        <a href="<?= base_url('pengembalian/edit/' . $p['id_pengembalian']) ?>"
-                                            class="btn btn-sm btn-warning">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
+
 
                                         <!-- HAPUS -->
                                         <a href="<?= base_url('pengembalian/delete/' . $p['id_pengembalian']) ?>"

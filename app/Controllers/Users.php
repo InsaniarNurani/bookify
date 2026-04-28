@@ -22,63 +22,55 @@ class Users extends BaseController
     // Menampilkan halaman form tambah user
     public function create()
     {
-        // Memanggil view users/create.php
-        return view('users/create');
+        $data = [
+            'hideSidebar' => true
+        ];
+
+        return view('users/create', $data);
     }
 
     // Menyimpan data user baru
     public function store()
     {
         // ================= VALIDASI =================
-        // Mengambil service validation dari CodeIgniter
         $validation = \Config\Services::validation();
 
-        // Menentukan aturan validasi
         $validation->setRules([
-            'nama'     => 'required', // wajib diisi
-            'email'    => 'required|valid_email', // wajib & format email valid
-            'username' => 'required|is_unique[users.username]', // unik di tabel users
-            'password' => 'required|min_length[4]', // minimal 4 karakter
-            'role'     => 'required', // wajib diisi
+            'nama'     => 'required',
+            'email'    => 'required|valid_email',
+            'username' => 'required|is_unique[users.username]',
+            'password' => 'required|min_length[4]',
+            // ❌ role dihapus dari validasi
         ]);
 
-        // Jika validasi gagal
         if (!$validation->withRequest($this->request)->run()) {
-            // Kembali ke halaman sebelumnya + tampilkan error
             return redirect()->back()->with('error', implode('<br>', $validation->getErrors()));
         }
 
         // ================= UPLOAD FOTO =================
-        // Mengambil file dari input name="foto"
         $foto = $this->request->getFile('foto');
-
-        // Default nama foto null
         $namaFoto = null;
 
-        // Jika ada file & valid & belum dipindahkan
         if ($foto && $foto->isValid() && !$foto->hasMoved()) {
-            // Generate nama random untuk menghindari konflik nama file
             $namaFoto = $foto->getRandomName();
-
-            // Pindahkan file ke folder public/uploads/users
             $foto->move(FCPATH . 'uploads/users', $namaFoto);
         }
 
         // ================= SIMPAN DATA =================
         $this->users->save([
-            'nama'     => $this->request->getPost('nama'), // ambil dari form
+            'nama'     => $this->request->getPost('nama'),
             'email'    => $this->request->getPost('email'),
             'username' => $this->request->getPost('username'),
-            // Password di-hash untuk keamanan
             'password' => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
-            'role'     => $this->request->getPost('role'),
-            'foto'     => $namaFoto // simpan nama file foto
+
+            // 🔥 FIX UTAMA: role tidak dari form, tapi otomatis anggota
+            'role'     => 'anggota',
+
+            'foto'     => $namaFoto
         ]);
 
-        // Redirect ke halaman login + pesan sukses
         return redirect()->to('/login')->with('success', 'User berhasil ditambahkan!');
     }
-
     // Menampilkan daftar user (dengan filter & pagination)
     public function index()
     {

@@ -24,36 +24,26 @@ class PeminjamanModel extends Model
         return $this->db->table('peminjaman')
             ->select('
             peminjaman.*,
-            u1.nama as nama_anggota,
-            u2.nama as nama_petugas
+            users.nama AS nama_anggota
         ')
-
-            ->join('anggota', 'anggota.id_anggota = peminjaman.id_anggota', 'left')
-            ->join('users as u1', 'u1.id = anggota.user_id', 'left')
-
-            ->join('petugas', 'petugas.id_petugas = peminjaman.id_petugas', 'left')
-            ->join('users as u2', 'u2.id = petugas.user_id', 'left')
-
+            ->join('anggota', 'anggota.id_anggota = peminjaman.id_anggota')
+            ->join('users', 'users.id = anggota.user_id')
             ->orderBy('peminjaman.id_peminjaman', 'DESC')
-            ->get()->getResultArray();
+            ->get()
+            ->getResultArray();
     }
-    public function getByAnggota($id_anggota)
+    public function getByAnggota($id)
     {
         return $this->db->table('peminjaman')
             ->select('
             peminjaman.*,
-            u1.nama as nama_anggota,
-            u2.nama as nama_petugas
+            users.nama AS nama_anggota
         ')
-
-            ->join('anggota', 'anggota.id_anggota = peminjaman.id_anggota', 'left')
-            ->join('users as u1', 'u1.id = anggota.user_id', 'left')
-
-            ->join('petugas', 'petugas.id_petugas = peminjaman.id_petugas', 'left')
-            ->join('users as u2', 'u2.id = petugas.user_id', 'left')
-
-            ->where('peminjaman.id_anggota', $id_anggota)
+            ->join('anggota', 'anggota.id_anggota = peminjaman.id_anggota')
+            ->join('users', 'users.id = anggota.user_id')
+            ->where('peminjaman.id_anggota', $id)
             ->orderBy('peminjaman.id_peminjaman', 'DESC')
-            ->get()->getResultArray();
+            ->get()
+            ->getResultArray();
     }
 }

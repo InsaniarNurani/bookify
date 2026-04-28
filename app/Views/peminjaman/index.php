@@ -6,7 +6,7 @@
     <!-- HEADER -->
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h3 class="fw-bold">
-            <i class="bi bi-journal-text me-2"></i>Data Peminjaman
+            <i class="bi bi-journal-text me-2"></i>Data peminjaman buku
         </h3>
 
         <?php if (session()->get('role') == 'anggota'): ?>

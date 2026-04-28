@@ -66,16 +66,8 @@
                             required>
                     </div>
 
-                    <!-- ROLE -->
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">Role</label>
-                        <select name="role" class="form-select" required>
-                            <option value="">-- Pilih Role --</option>
-                            <option value="admin">Admin</option>
-                            <option value="petugas">Petugas</option>
-                            <option value="anggota">Anggota</option>
-                        </select>
-                    </div>
+                    <!-- ROLE (DISABLE / HAPUS) -->
+                    <input type="hidden" name="role" value="anggota">
 
                     <!-- FOTO -->
                     <div class="col-md-6 mb-3">
